@@ -1,0 +1,21 @@
+# Test/scratch files
+filter-test.html
+mc-api-test.html
+test-mc-parsers.js
+verify-filter.js
+
+# Sample data
+listings.json
+
+# Legacy scraper (replaced by in-browser approach)
+scraper.py
+scraper_config.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~

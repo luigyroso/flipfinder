@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flip Finder — Bogotá</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8f9fc;
+  --white: #ffffff;
+  --gray-50: #f0f2f7;
+  --gray-100: #e5e7ee;
+  --gray-200: #d1d5e0;
+  --gray-300: #b0b6c4;
+  --gray-400: #8a92a6;
+  --gray-500: #6b7280;
+  --gray-700: #3d4559;
+  --gray-800: #252b3b;
+  --gray-900: #151923;
+  --blue: #4f6ef7;
+  --blue-light: #eef1ff;
+  --blue-dark: #3b57d9;
+  --green: #22c55e;
+  --green-light: #ecfdf5;
+  --green-dark: #16a34a;
+  --red: #ef4444;
+  --red-light: #fef2f2;
+  --orange: #f59e0b;
+  --orange-light: #fffbeb;
+  --purple: #8b5cf6;
+  --purple-light: #f3f0ff;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.07);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+  --radius: 10px;
+  --radius-lg: 14px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--gray-800); min-height: 100vh; }
+
+/* ── HEADER ── */
+.header {
+  background: var(--white); border-bottom: 1px solid var(--gray-100);
+  padding: 12px 24px; display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm);
+}
+.header-left { display: flex; align-items: center; gap: 18px; }
+.logo { font-size: 17px; font-weight: 800; color: var(--gray-900); display: flex; align-items: center; gap: 7px; letter-spacing: -0.3px; }
+.logo-dot { width: 8px; height: 8px; background: var(--blue); border-radius: 50%; }
+.header-stats { display: flex; gap: 6px; }
+.stat { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.stat-new { background: var(--orange-light); color: var(--orange); }
+.stat-contact { background: var(--green-light); color: var(--green-dark); }
+.stat-discard { background: var(--red-light); color: var(--red); }
+.header-right { display: flex; gap: 8px; align-items: center; }
+.reminder-banner {
+  background: linear-gradient(90deg, var(--orange-light), #fff8f0);
+  border-bottom: 1px solid var(--orange);
+  padding: 8px 24px; display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; color: var(--gray-700); display: none;
+}
+.reminder-banner.show { display: flex; }
+.reminder-banner .reminder-text { display: flex; align-items: center; gap: 8px; }
+.reminder-banner .reminder-time { font-weight: 700; color: var(--orange); }
+.reminder-banner .reminder-dismiss { background: none; border: none; cursor: pointer; color: var(--gray-400); font-size: 14px; padding: 2px 6px; }
+.btn {
+  padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; border: none; display: flex; align-items: center; gap: 5px;
+  font-family: inherit;
+}
+.btn-primary { background: var(--blue); color: white; box-shadow: 0 1px 3px rgba(79,110,247,0.3); }
+.btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 3px 8px rgba(79,110,247,0.3); }
+.btn-ghost { background: transparent; color: var(--gray-500); border: 1px solid var(--gray-200); }
+.btn-ghost:hover { background: var(--gray-50); color: var(--gray-700); }
+.btn-add { background: var(--green); color: white; }
+.btn-add:hover { background: var(--green-dark); }
+
+/* ── MODAL ── */
+.overlay {
+  display: none; position: fixed; inset: 0; background: rgba(21,25,35,0.4);
+  backdrop-filter: blur(4px); z-index: 200; justify-content: center; align-items: center;
+}
+.overlay.open { display: flex; }
+.modal {
+  background: var(--white); border-radius: var(--radius-lg); width: 540px; max-width: 94vw;
+  max-height: 90vh; overflow-y: auto; padding: 24px; box-shadow: var(--shadow-lg);
+  animation: modalIn 0.2s ease;
+}
+@keyframes modalIn { from { opacity: 0; transform: scale(0.97) translateY(8px); } to { opacity: 1; transform: none; } }
+.modal::-webkit-scrollbar { width: 4px; }
+.modal::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+.modal-title { font-size: 16px; font-weight: 700; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+.modal-close { background: none; border: none; color: var(--gray-400); font-size: 18px; cursor: pointer; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+.modal-close:hover { background: var(--gray-50); color: var(--gray-700); }
+.section { margin-bottom: 18px; }
+.section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--gray-400); margin-bottom: 8px; }
+.row { display: flex; gap: 10px; margin-bottom: 8px; }
+.field { flex: 1; }
+.field label { display: block; font-size: 11px; font-weight: 500; color: var(--gray-500); margin-bottom: 3px; }
+.field input, .field select {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--gray-200); border-radius: 8px;
+  font-size: 13px; color: var(--gray-800); background: var(--white); outline: none;
+  font-family: inherit; transition: border-color 0.15s;
+}
+.field input:focus, .field select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-light); }
+.chips { display: flex; gap: 4px; }
+.chip {
+  width: 36px; height: 32px; border-radius: 8px; border: 1.5px solid var(--gray-200);
+  background: var(--white); color: var(--gray-400); font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center;
+  font-family: inherit;
+}
+.chip:hover { border-color: var(--blue); color: var(--blue); }
+.chip.active { background: var(--blue); border-color: var(--blue); color: white; }
+.modal-footer { padding-top: 16px; border-top: 1px solid var(--gray-100); display: flex; gap: 8px; }
+.btn-search-main {
+  flex: 1; padding: 11px; border-radius: 10px; border: none; background: var(--blue);
+  color: white; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.btn-search-main:hover { background: var(--blue-dark); }
+.btn-search-main:disabled { opacity: 0.5; cursor: wait; }
+.progress { margin-top: 14px; display: none; }
+.progress.active { display: block; }
+.progress-bar { height: 4px; background: var(--gray-100); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--blue); border-radius: 2px; transition: width 0.3s; width: 0%; }
+.progress-text { font-size: 11px; color: var(--gray-400); margin-top: 6px; text-align: center; }
+
+/* ── Add Listing Modal ── */
+.add-field { margin-bottom: 12px; }
+.add-field label { display: block; font-size: 11px; font-weight: 500; color: var(--gray-500); margin-bottom: 4px; }
+.add-field input {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--gray-200); border-radius: 8px;
+  font-size: 13px; color: var(--gray-800); outline: none; font-family: inherit;
+}
+.add-field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-light); }
+
+/* ── TOOLBAR ── */
+.toolbar {
+  padding: 10px 24px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+  background: var(--white); border-bottom: 1px solid var(--gray-100);
+}
+.pill {
+  padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; border: 1px solid var(--gray-200);
+  background: transparent; color: var(--gray-500); font-family: inherit;
+}
+.pill:hover { border-color: var(--gray-300); color: var(--gray-700); }
+.pill.active { background: var(--gray-800); border-color: var(--gray-800); color: white; }
+.toolbar-search {
+  flex: 1; min-width: 140px; padding: 6px 12px; border-radius: 8px;
+  border: 1px solid var(--gray-200); font-size: 12px; color: var(--gray-700); outline: none;
+  background: var(--gray-50); font-family: inherit;
+}
+.toolbar-search:focus { border-color: var(--blue); background: white; box-shadow: 0 0 0 3px var(--blue-light); }
+.toolbar-search::placeholder { color: var(--gray-300); }
+.toolbar-select {
+  padding: 6px 10px; border-radius: 8px; border: 1px solid var(--gray-200);
+  font-size: 11px; color: var(--gray-600); cursor: pointer; outline: none;
+  background: var(--gray-50); font-family: inherit;
+}
+
+/* ── LAYOUT ── */
+.main { display: flex; height: calc(100vh - 96px); }
+
+/* ── LIST ── */
+.list {
+  width: 420px; min-width: 340px; overflow-y: auto; background: var(--white);
+  border-right: 1px solid var(--gray-100);
+}
+.list::-webkit-scrollbar { width: 4px; }
+.list::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+
+.card {
+  padding: 14px 20px; border-bottom: 1px solid var(--gray-50); cursor: pointer;
+  transition: all 0.12s; position: relative;
+}
+.card:hover { background: var(--gray-50); }
+.card.selected { background: var(--gray-50); border-left: 4px solid var(--blue); box-shadow: inset 0 0 0 1px var(--blue-light); }
+.card.unread { background: var(--blue-light); border-left: 3px solid var(--blue); }
+.card.unread:hover { background: #e0e7ff; }
+.card.unread.selected { background: var(--gray-50); border-left: 4px solid var(--blue); box-shadow: inset 0 0 0 1px var(--blue-light); }
+.card.status-contacted { border-left: 3px solid var(--green); }
+.card.status-discarded { opacity: 0.4; }
+.card-row1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+.card-source { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-400); }
+.card-badge { font-size: 9px; padding: 2px 7px; border-radius: 10px; font-weight: 700; text-transform: uppercase; }
+.card-badge-new { background: var(--orange-light); color: var(--orange); }
+.card-badge-contacted { background: var(--green-light); color: var(--green-dark); }
+.card-badge-discarded { background: var(--red-light); color: var(--red); }
+.card-fav { position: absolute; top: 32px; right: 14px; font-size: 16px; cursor: pointer; opacity: 0.25; transition: all 0.15s; z-index: 2; background: none; border: none; padding: 2px; }
+.card-fav:hover { opacity: 0.7; transform: scale(1.2); }
+.card-fav.active { opacity: 1; color: #f59e0b; }
+.card-price { font-size: 18px; font-weight: 800; color: var(--gray-900); letter-spacing: -0.3px; }
+.card-estrato {
+  display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 9px;
+  font-weight: 700; background: var(--purple-light); color: var(--purple); margin-left: 6px; vertical-align: middle;
+}
+.card-title { font-size: 12px; font-weight: 500; color: var(--gray-600); margin: 4px 0; line-height: 1.4;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-meta { display: flex; gap: 10px; font-size: 10px; color: var(--gray-400); font-weight: 500; }
+.card-ppm2 { font-size: 10px; color: var(--gray-300); margin-top: 2px; }
+
+/* ── DETAIL PANEL ── */
+.detail {
+  flex: 1; overflow-y: auto; background: var(--bg); display: flex; flex-direction: column;
+}
+.detail::-webkit-scrollbar { width: 4px; }
+.detail::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+.detail-empty {
+  flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column;
+  gap: 8px; color: var(--gray-300);
+}
+.detail-empty-icon { font-size: 40px; opacity: 0.4; }
+.detail-empty p { font-size: 13px; }
+.detail-head { padding: 24px; background: var(--white); border-bottom: 1px solid var(--gray-100); box-shadow: var(--shadow-sm); }
+.detail-source { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-400); margin-bottom: 6px; }
+.detail-title { font-size: 20px; font-weight: 700; color: var(--gray-900); line-height: 1.3; margin-bottom: 10px; }
+.detail-price { font-size: 28px; font-weight: 800; color: var(--blue); margin-bottom: 14px; letter-spacing: -0.5px; }
+.detail-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.tag {
+  padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  background: var(--gray-50); color: var(--gray-600); border: 1px solid var(--gray-100);
+}
+.tag-purple { background: var(--purple-light); color: var(--purple); border-color: transparent; }
+.detail-actions {
+  padding: 14px 24px; display: flex; gap: 8px; flex-wrap: wrap;
+  background: var(--white); border-bottom: 1px solid var(--gray-100);
+}
+.detail-iframe { flex: 1; padding: 16px 24px 24px; min-height: 500px; }
+.detail-iframe iframe {
+  width: 100%; height: 100%; min-height: 600px; border: 1px solid var(--gray-100);
+  border-radius: var(--radius); background: white; box-shadow: var(--shadow);
+}
+.detail-images { padding: 14px 24px; display: flex; gap: 6px; overflow-x: auto; }
+.detail-images img { height: 100px; border-radius: 8px; object-fit: cover; border: 2px solid transparent; transition: all 0.15s; cursor: pointer; }
+.detail-images img:hover { border-color: var(--blue); }
+
+.empty-state { text-align: center; padding: 60px 24px; color: var(--gray-400); }
+.empty-state h2 { font-size: 16px; margin-bottom: 10px; color: var(--gray-700); font-weight: 700; }
+.empty-state p { font-size: 13px; line-height: 1.7; max-width: 380px; margin: 0 auto; }
+
+.toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(10px);
+  padding: 10px 20px; border-radius: 10px; font-size: 12px; font-weight: 600;
+  z-index: 500; opacity: 0; transition: all 0.3s; pointer-events: none;
+  background: var(--gray-800); color: white; box-shadow: var(--shadow-lg);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.error { background: var(--red); }
+
+@media (max-width: 900px) {
+  .main { flex-direction: column; height: auto; }
+  .list { width: 100%; min-width: unset; max-height: 40vh; border-right: none; border-bottom: 1px solid var(--gray-100); }
+  .detail { min-height: 60vh; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo"><span class="logo-dot"></span> Flip Finder</div>
+    <div class="header-stats">
+      <span class="stat stat-new" id="stat-new">0 nuevos</span>
+      <span class="stat" id="stat-fav" style="background:#fffbeb;color:#f59e0b">0 favoritos</span>
+      <span class="stat stat-contact" id="stat-contact">0 contactados</span>
+      <span class="stat stat-discard" id="stat-discard">0 descartados</span>
+      <span class="stat" id="stat-last" style="background:var(--gray-50);color:var(--gray-400);font-size:9px"></span>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-ghost" onclick="openAdd()">+ Agregar</button>
+    <button class="btn btn-ghost" onclick="clearCache()" style="font-size:10px;color:var(--red)">🗑 Limpiar cache</button>
+    <button class="btn btn-ghost" onclick="runDebug()" id="btn-debug" style="font-size:10px;color:var(--gray-400)">🔍 Debug</button>
+    <button class="btn btn-ghost" onclick="testMC()" id="btn-mctest" style="font-size:10px;color:var(--orange)">🏢 Test MC</button>
+    <button class="btn btn-primary" onclick="openSearch()">Buscar apartamentos</button>
+  </div>
+</div>
+
+<div class="reminder-banner" id="reminder-banner">
+  <div class="reminder-text">
+    <span>Hoy no has buscado apartamentos.</span>
+    <span class="reminder-time" id="reminder-last"></span>
+    <button class="btn btn-primary" onclick="openSearch()" style="padding:4px 12px;font-size:11px">Buscar ahora</button>
+  </div>
+  <button class="reminder-dismiss" onclick="dismissReminder()" title="Cerrar">&#x2715;</button>
+</div>
+
+<!-- SEARCH MODAL -->
+<div class="overlay" id="search-overlay" onclick="if(event.target===this)closeSearch()">
+  <div class="modal">
+    <div class="modal-title">Buscar apartamentos <button class="modal-close" onclick="closeSearch()">&#x2715;</button></div>
+
+    <div class="section"><div class="section-label">General</div>
+      <div class="row">
+        <div class="field"><label>Ciudad</label><select id="c-city"><option value="bogota" selected>Bogota</option><option value="medellin">Medellin</option><option value="cali">Cali</option><option value="barranquilla">Barranquilla</option><option value="cartagena">Cartagena</option></select></div>
+        <div class="field"><label>Tipo</label><select id="c-type"><option value="apartamento" selected>Apartamento</option><option value="casa">Casa</option></select></div>
+        <div class="field"><label>Oferta</label><select id="c-offer"><option value="venta" selected>Venta</option><option value="arriendo">Arriendo</option></select></div>
+      </div>
+    </div>
+
+    <div class="section"><div class="section-label">Precio (COP)</div>
+      <div class="row">
+        <div class="field"><label>Min</label><input type="number" id="c-pmin" value="150000000" step="10000000"></div>
+        <div class="field"><label>Max</label><input type="number" id="c-pmax" value="300000000" step="10000000"></div>
+      </div>
+    </div>
+
+    <div class="section"><div class="section-label">Area (m2)</div>
+      <div class="row">
+        <div class="field"><label>Min</label><input type="number" id="c-amin" value="55" step="5"></div>
+        <div class="field"><label>Max</label><input type="number" id="c-amax" value="80" step="5"></div>
+      </div>
+    </div>
+
+    <div class="section"><div class="section-label">Habitaciones</div>
+      <div class="row">
+        <div class="field"><label>Min</label><input type="number" id="c-rmin" value="2" min="0" max="10"></div>
+        <div class="field"><label>Max</label><input type="number" id="c-rmax" value="4" min="0" max="10"></div>
+      </div>
+    </div>
+
+    <div class="section"><div class="section-label">Baños</div>
+      <div class="row">
+        <div class="field"><label>Min</label><input type="number" id="c-bmin" value="1" min="0" max="10"></div>
+        <div class="field"><label>Max</label><input type="number" id="c-bmax" value="10" min="0" max="10"></div>
+      </div>
+    </div>
+
+    <div class="section"><div class="section-label">Parqueadero</div>
+      <div class="row">
+        <div class="field"><label>Min</label><input type="number" id="c-gmin" value="0" min="0" max="10"></div>
+        <div class="field"><label>Max</label><input type="number" id="c-gmax" value="10" min="0" max="10"></div>
+      </div>
+    </div>
+
+    <div class="section"><div class="section-label">Estrato <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--gray-300)">(solo se muestran los seleccionados)</span></div>
+      <div class="chips" id="estrato-chips">
+        <button class="chip active" data-e="1">1</button><button class="chip active" data-e="2">2</button>
+        <button class="chip active" data-e="3">3</button><button class="chip active" data-e="4">4</button>
+        <button class="chip active" data-e="5">5</button><button class="chip active" data-e="6">6</button>
+      </div>
+    </div>
+
+    <div class="section"><div class="section-label">Paginas por sitio</div>
+      <div class="row"><div class="field"><input type="number" id="c-pages" value="2" min="1" max="10"></div></div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-search-main" id="btn-go" onclick="runSearch()">Buscar apartamentos</button>
+    </div>
+    <div class="progress" id="prog">
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+      <div class="progress-text" id="prog-text"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD LISTING MODAL -->
+<div class="overlay" id="add-overlay" onclick="if(event.target===this)closeAdd()">
+  <div class="modal" style="width:440px">
+    <div class="modal-title">Agregar inmueble <button class="modal-close" onclick="closeAdd()">&#x2715;</button></div>
+    <div class="add-field"><label>URL de la publicacion</label><input id="add-url" placeholder="https://www.fincaraiz.com.co/..."></div>
+    <div class="add-field"><label>Titulo / descripcion</label><input id="add-title" placeholder="Apartamento en Chapinero..."></div>
+    <div class="row">
+      <div class="add-field"><label>Precio (COP)</label><input type="number" id="add-price" placeholder="250000000"></div>
+      <div class="add-field"><label>Area (m2)</label><input type="number" id="add-area" placeholder="65"></div>
+    </div>
+    <div class="row">
+      <div class="add-field"><label>Habitaciones</label><input type="number" id="add-rooms" placeholder="2"></div>
+      <div class="add-field"><label>Banos</label><input type="number" id="add-baths" placeholder="2"></div>
+      <div class="add-field"><label>Estrato</label><input type="number" id="add-estrato" placeholder="4" min="1" max="6"></div>
+    </div>
+    <div class="add-field"><label>Barrio</label><input id="add-hood" placeholder="Chapinero"></div>
+    <div class="modal-footer">
+      <button class="btn-search-main" onclick="addManual()" style="background:var(--green)">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <button class="pill active" data-f="all">Todos</button>
+  <button class="pill" data-f="new">Nuevos</button>
+  <button class="pill" data-f="favorite">&#9733; Favoritos</button>
+  <button class="pill" data-f="contacted">Contactados</button>
+  <button class="pill" data-f="discarded">Descartados</button>
+  <button class="pill" id="filter-toggle" onclick="toggleDisplayFilters()" title="Aplicar filtros de búsqueda a los resultados">⚡ Filtrar</button>
+  <button class="pill" id="proximity-toggle" onclick="toggleProximity()" title="Filtrar por distancia">📍 Cerca de mí</button>
+  <span id="proximity-controls" style="display:none;align-items:center;gap:6px">
+    <input type="range" id="proximity-range" min="1" max="20" value="5" style="width:90px;accent-color:var(--blue)" oninput="updateProximityKm(this.value)">
+    <span id="proximity-label" style="font-size:11px;font-weight:600;color:var(--blue);min-width:38px">5 km</span>
+    <input type="text" id="proximity-coords" placeholder="lat, lon (manual)" style="width:120px;padding:4px 8px;border:1px solid var(--gray-200);border-radius:6px;font-size:10px;color:var(--gray-600);display:none" onchange="setManualCoords(this.value)">
+    <button class="pill" onclick="toggleManualCoords()" title="Ingresar coordenadas manualmente" style="padding:3px 8px;font-size:10px">✏️</button>
+  </span>
+  <input type="text" class="toolbar-search" placeholder="Buscar barrio, titulo..." id="q">
+  <select class="toolbar-select" id="sort">
+    <option value="price-asc">Precio ↑</option><option value="price-desc">Precio ↓</option>
+    <option value="area-desc">Area ↓</option><option value="ppm2-asc">$/m2 ↑</option>
+    <option value="estrato-asc">Estrato ↑</option><option value="estrato-desc">Estrato ↓</option>
+    <option value="nearest">Distancia ↑</option>
+    <option value="newest">Recientes</option>
+  </select>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="list" id="list">
+    <div class="empty-state">
+      <h2>Bienvenido a Flip Finder</h2>
+      <p>Haz click en <strong>Buscar apartamentos</strong> para configurar tus criterios y empezar, o <strong>+ Agregar</strong> para ingresar un inmueble manualmente.</p>
+    </div>
+  </div>
+  <div class="detail" id="detail">
+    <div class="detail-empty"><div class="detail-empty-icon">🏠</div><p>Selecciona un inmueble</p></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══ STATE ═══
+let listings=[], selectedId=null, filter="all", query="", sort="price-asc", searching=false, displayFiltersOn=false;
+const SK="ff_state", LK="ff_listings", CK="ff_config", LSK="ff_last_search", GK="ff_search_gen";
+let searchGen=parseInt(localStorage.getItem(GK))||1;
+const PROXIES=[
+  u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+  u=>`https://corsproxy.org/?${encodeURIComponent(u)}`,
+  u=>`https://thingproxy.freeboard.io/fetch/${u}`,
+];
+
+// ═══ UTILS ═══
+function toast(m,err){const t=document.getElementById("toast");t.textContent=m;t.className="toast show"+(err?" error":"");setTimeout(()=>t.className="toast",3500)}
+function fCOP(n){n=parseInt(n)||0;if(n>=1e6)return`$${(n/1e6).toFixed(1)}M`;if(n>=1e3)return`$${(n/1e3).toFixed(0)}K`;return`$${n.toLocaleString()}`}
+function hsh(s){let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0}return Math.abs(h).toString(36).slice(0,12)}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
+// ═══ PROXIMITY ═══
+let proximityOn=false, userLat=0, userLon=0, proximityKm=5;
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371,toR=Math.PI/180;
+  const dLat=(lat2-lat1)*toR,dLon=(lon2-lon1)*toR;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*toR)*Math.cos(lat2*toR)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function listingDist(l){
+  if(!userLat||!l.lat||!l.lon)return null;
+  return haversine(userLat,userLon,l.lat,l.lon);
+}
+
+// ═══ MODALS ═══
+function openSearch(){loadCfg();document.getElementById("search-overlay").classList.add("open")}
+function closeSearch(){document.getElementById("search-overlay").classList.remove("open")}
+function openAdd(){document.getElementById("add-overlay").classList.add("open")}
+function closeAdd(){document.getElementById("add-overlay").classList.remove("open")}
+
+function loadCfg(){
+  let c;try{c=JSON.parse(localStorage.getItem(CK))}catch{}
+  if(!c)c={city:"bogota",type:"apartamento",offer:"venta",pmin:150000000,pmax:300000000,amin:55,amax:80,rmin:2,rmax:4,emin:1,emax:6,pages:2};
+  document.getElementById("c-city").value=c.city||"bogota";
+  document.getElementById("c-type").value=c.type||"apartamento";
+  document.getElementById("c-offer").value=c.offer||"venta";
+  document.getElementById("c-pmin").value=c.pmin||150000000;
+  document.getElementById("c-pmax").value=c.pmax||300000000;
+  document.getElementById("c-amin").value=c.amin||55;
+  document.getElementById("c-amax").value=c.amax||80;
+  document.getElementById("c-rmin").value=c.rmin||2;
+  document.getElementById("c-rmax").value=c.rmax||4;
+  document.getElementById("c-bmin").value=c.bmin||1;
+  document.getElementById("c-bmax").value=c.bmax||10;
+  document.getElementById("c-gmin").value=c.gmin||0;
+  document.getElementById("c-gmax").value=c.gmax||10;
+  document.getElementById("c-pages").value=c.pages||2;
+  document.querySelectorAll(".chip").forEach(ch=>{const v=+ch.dataset.e;if(c.estratos)ch.classList.toggle("active",c.estratos.includes(v));else ch.classList.toggle("active",v>=(c.emin||1)&&v<=(c.emax||6))});
+}
+function readCfg(){
+  const ae=[...document.querySelectorAll(".chip.active")].map(c=>+c.dataset.e).sort((a,b)=>a-b);
+  return{city:document.getElementById("c-city").value,type:document.getElementById("c-type").value,
+    offer:document.getElementById("c-offer").value,
+    pmin:+document.getElementById("c-pmin").value||0,pmax:+document.getElementById("c-pmax").value||0,
+    amin:+document.getElementById("c-amin").value||0,amax:+document.getElementById("c-amax").value||0,
+    rmin:+document.getElementById("c-rmin").value||0,rmax:+document.getElementById("c-rmax").value||0,
+    bmin:+document.getElementById("c-bmin").value||0,bmax:+document.getElementById("c-bmax").value||0,
+    gmin:+document.getElementById("c-gmin").value||0,gmax:+document.getElementById("c-gmax").value||0,
+    estratos:ae,emin:ae.length?ae[0]:1,emax:ae.length?ae[ae.length-1]:6,
+    pages:+document.getElementById("c-pages").value||2}
+}
+document.getElementById("estrato-chips").addEventListener("click",e=>{const c=e.target.closest(".chip");if(c)c.classList.toggle("active")});
+
+// ═══ CORS FETCH ═══
+async function cFetch(url,timeout=15000){
+  for(const pf of PROXIES){try{const r=await fetch(pf(url),{signal:AbortSignal.timeout(timeout)});if(r.ok)return await r.text()}catch{}}
+  return null;
+}
+
+// ═══ SEARCH ENGINE ═══
+function prog(p,t){document.getElementById("prog-fill").style.width=p+"%";document.getElementById("prog-text").textContent=t}
+
+async function runSearch(){
+  if(searching)return;searching=true;
+  searchGen++;localStorage.setItem(GK,String(searchGen));
+  window._mcFieldDump=null; // Reset for fresh capture
+  const btn=document.getElementById("btn-go"),pr=document.getElementById("prog");
+  btn.disabled=true;btn.textContent="Buscando...";pr.classList.add("active");
+  const c=readCfg();localStorage.setItem(CK,JSON.stringify(c));
+
+  let found=[];const frPages2=Math.min(c.pages*2,10);const total=frPages2+c.pages+c.pages+5;let step=0;
+
+  // ── FINCA RAIZ (multi-strategy: API → _next/data → HTML __NEXT_DATA__) ──
+  let frTotal=0;
+  const frPages=Math.min(c.pages*2,10); // Crawl more FR pages to compensate for lower items/page
+  // Strategy 1: Try FR's internal search API (if it exists)
+  let frApiWorks=false;
+  const frApiUrls=[
+    `https://api.fincaraiz.com.co/document/api/1.0/listing/search`,
+    `https://www.fincaraiz.com.co/api/search`,
+    `https://www.fincaraiz.com.co/_next/data`,
+  ];
+  for(const apiBase of frApiUrls){
+    if(frApiWorks)break;
+    try{
+      step++;prog(Math.round(step/total*100),"Finca Raiz — probando API...");
+      let resp;
+      if(apiBase.includes("document/api")){
+        // Known FR API format (used by mobile app / internal)
+        resp=await fetch(apiBase,{
+          method:"POST",
+          headers:{"Content-Type":"application/json","Accept":"application/json"},
+          body:JSON.stringify({
+            filter:{offer:{slug:[c.offer]},property_type:{slug:[c.type]},
+              location:{slug:[c.city]},
+              price:{min:c.pmin,max:c.pmax},area:{min:c.amin,max:c.amax},
+              bedrooms:{min:c.rmin,max:c.rmax}},
+            fields:{include:["area","price","bedrooms","bathrooms","garages","stratum","title","link","images","locations","latitude","longitude"]},
+            page:1,limit:50
+          }),
+          signal:AbortSignal.timeout(8000)
+        });
+      }else{
+        resp=await fetch(`${apiBase}?type=${c.type}&offer=${c.offer}&city=${c.city}`,{
+          headers:{"Accept":"application/json"},
+          signal:AbortSignal.timeout(6000)
+        });
+      }
+      if(resp.ok){
+        const txt=await resp.text();
+        console.log(`[FR API] ${apiBase} → ${resp.status}, ${txt.length} chars`);
+        try{
+          const j=JSON.parse(txt);
+          const arrays=walkForArrays(j);
+          if(arrays.length>0){
+            console.log(`[FR API] Found ${arrays.length} arrays, first has ${arrays[0].length} items`);
+            frApiWorks=true;
+            // Parse all items
+            for(const arr of arrays){
+              for(const it of arr){
+                if(!it||typeof it!=="object")continue;
+                const items=parseFincaRaiz(`<script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"fetchResult":${JSON.stringify([it])}}}}</script>`);
+                found.push(...items);frTotal+=items.length;
+              }
+            }
+          }
+        }catch{}
+      }
+    }catch(e){console.log(`[FR API] ${apiBase} failed:`,e.message)}
+  }
+
+  // Strategy 2: CORS proxy HTML fetch (existing approach, with better logging)
+  if(!frApiWorks){
+    console.log("[FR] API strategies failed, falling back to CORS proxy HTML fetch");
+    for(let p=1;p<=frPages;p++){
+      step++;prog(Math.round(step/total*100),`Finca Raiz — pagina ${p}/${frPages}...`);
+      const estr=c.estratos&&c.estratos.length>0&&c.estratos.length<6?`&estrato=${c.estratos.join(",")}`:"";
+      const frUrl=`https://www.fincaraiz.com.co/${c.type}s/${c.offer}/${c.city}?order=3&pagina=${p}&precio-desde=${c.pmin}&precio-hasta=${c.pmax}&area-desde=${c.amin}&area-hasta=${c.amax}&habitaciones-desde=${c.rmin}&habitaciones-hasta=${c.rmax}${estr}`;
+      console.log(`[FR] Fetching page ${p}: ${frUrl.slice(0,120)}...`);
+      try{
+        const html=await cFetch(frUrl);
+        if(html){
+          const hasNextData=html.includes("__NEXT_DATA__");
+          console.log(`[FR] Page ${p}: got ${html.length} chars, __NEXT_DATA__: ${hasNextData}`);
+          if(!hasNextData){
+            const titleM=html.match(/<title>(.*?)<\/title>/i);
+            console.log(`[FR] Page ${p}: no __NEXT_DATA__. Title: "${titleM?.[1]||"?"}"`);
+          }
+          const items=parseFincaRaiz(html);
+          console.log(`[FR] Page ${p}: parsed ${items.length} listings`);
+          frTotal+=items.length;
+          found.push(...items);
+          if(items.length===0&&p>1){console.log("[FR] 0 items on page "+p+" — stopping pagination");break}
+        }else{
+          console.log(`[FR] Page ${p}: all CORS proxies failed`);
+          if(p===1){console.log("[FR] First page failed — FR may be blocking all proxies. Skipping remaining pages.");break}
+        }
+      }catch(e){console.log(`[FR] Page ${p} ERROR:`,e.message)}
+      await sleep(600);
+    }
+  }
+  console.log(`[FR] Total: ${frTotal} listings`);
+
+  // ── METROCUADRADO (uses API — smart filtered crawl) ──
+  // Try filtered first (saves a redundant unfiltered call). Fall back to unfiltered if 0 hits.
+  let mcSkip=false, mcFiltered=false;
+  let filteredHits=0;
+  let page1Items=[];
+  try{
+    const r=await fetchMetrocuadrado(c,1,true);
+    filteredHits=r.totalHits||0;
+    if(filteredHits>0&&r.items.length>0){
+      mcFiltered=true;
+      page1Items=r.items;
+      console.log(`[MC] Filtered mode: ${filteredHits} totalHits, ${r.items.length} items on page 1`);
+    }else{
+      // Filters returned nothing — fall back to unfiltered
+      console.log(`[MC] Filtered returned ${filteredHits} hits / ${r.items.length} items — falling back to unfiltered`);
+      const r2=await fetchMetrocuadrado(c,1,false);
+      page1Items=r2.items;
+      console.log(`[MC] Unfiltered: ${r2.totalHits||0} totalHits, ${r2.items.length} items on page 1`);
+    }
+  }catch(e){
+    console.log("[MC] Filtered probe failed:",e.message,"— trying unfiltered");
+    try{ const r=await fetchMetrocuadrado(c,1,false); page1Items=r.items; }catch{}
+  }
+  if(page1Items.length===0)mcSkip=true;
+  found.push(...page1Items);
+  step++;prog(Math.round(step/total*100),"Metrocuadrado — pagina 1...");
+  await sleep(300);
+  // Pages 2+: higher cap for filtered (every result relevant), lower for unfiltered
+  const mcTotalPages=mcFiltered?Math.ceil(filteredHits/50):0;
+  const mcMaxPages=mcFiltered?Math.min(c.pages,mcTotalPages,20):Math.min(c.pages,10);
+  console.log(`[MC] Crawling pages 2-${mcMaxPages} (${mcFiltered?"FILTERED":"unfiltered"}, totalHits=${mcFiltered?filteredHits:"?"})`);
+  for(let p=2;p<=mcMaxPages;p++){
+    step++;prog(Math.round(step/total*100),`Metrocuadrado — pagina ${p}${mcFiltered?" (filtrado)":""}...`);
+    if(mcSkip){break} // early exit — no point iterating remaining pages
+    try{
+      const r=await fetchMetrocuadrado(c,p,mcFiltered);
+      if(r.items.length===0){console.log(`[MC] Page ${p} returned 0 — stopping`);break}
+      found.push(...r.items);
+    }catch{}
+    await sleep(300);
+  }
+  // Account for skipped pages in progress bar
+  step+=Math.max(0,c.pages-mcMaxPages);
+
+  // ── CIENCUADRAS — disabled: requires authenticated API, blocks all CORS proxies ──
+  // Ciencuadras.com blocks corsproxy.io, allorigins.win, and codetabs.com.
+  // Their API (api-rest.ciencuadras.com) requires OAuth credentials (client_id/secret).
+  // Unlike Metrocuadrado (which has a public CORS-enabled API), there's no browser-only way to fetch CC data.
+  step+=c.pages; // skip CC pages in progress bar
+  console.log("[CC] Ciencuadras skipped — no browser-accessible API (requires OAuth credentials)");
+
+  prog(95,"Enriqueciendo MC (estrato + teléfono)...");
+  // Enrich MC listings: fetch estrato + phone from detail pages
+  const mcToEnrich=found.filter(l=>l.source==="Metrocuadrado"&&(!l.estrato||!l.phones||!l.phones.length));
+  if(mcToEnrich.length>0){
+    const BATCH=10, MAX_ENRICH=200, TIMEOUT=8000;
+    const toEnrich=mcToEnrich.slice(0,MAX_ENRICH);
+    console.log(`[MC Enrich] Fetching estrato+phone for ${toEnrich.length}/${mcToEnrich.length} listings`);
+    for(let i=0;i<toEnrich.length;i+=BATCH){
+      const batch=toEnrich.slice(i,i+BATCH);
+      prog(95+Math.round((i/toEnrich.length)*4),`Enriqueciendo MC ${i+1}/${toEnrich.length}...`);
+      await Promise.all(batch.map(async(listing)=>{
+        try{
+          const code=listing.propertyCode||listing.url?.match(/\/([\w]+-[\w]+-?\d*)$/)?.[1]||"";
+          const info=await fetchMCEnrich(code,listing.url||"",TIMEOUT);
+          if(info.estrato>=1&&info.estrato<=6&&!listing.estrato)listing.estrato=info.estrato;
+          if(info.phones.length&&(!listing.phones||!listing.phones.length))listing.phones=info.phones;
+        }catch{}
+      }));
+    }
+    const enriched=toEnrich.filter(l=>l.estrato>0).length;
+    const phonesFound=toEnrich.filter(l=>l.phones&&l.phones.length>0).length;
+    console.log(`[MC Enrich] Done: ${enriched}/${toEnrich.length} got estrato, ${phonesFound} got phone`);
+  }
+
+  prog(100,"Procesando...");
+  // DO NOT filter here — let getFiltered() handle display-time filtering.
+
+  // Replace all "new" listings with fresh data (keep contacted/discarded)
+  const prevLastSearch=localStorage.getItem(LSK)||"";
+  const prevCount=listings.length;
+  listings=listings.filter(l=>l.status==="contacted"||l.status==="discarded"||l.favorite);
+  merge(found);
+  localStorage.setItem(LSK,new Date().toISOString());
+  sessionStorage.removeItem("ff_reminder_dismissed");
+  // Auto-enable display filters after search so results are always filtered
+  displayFiltersOn=true;document.getElementById("filter-toggle").classList.add("active");
+  save();render();
+  btn.disabled=false;btn.textContent="Buscar apartamentos";pr.classList.remove("active");
+  searching=false;
+
+  // Count truly new listings (first_seen after previous search)
+  const brandNew=prevLastSearch?listings.filter(l=>l.first_seen&&l.first_seen>prevLastSearch).length:found.length;
+  if(found.length>0){
+    const msg=brandNew>0?`${found.length} inmuebles encontrados (${brandNew} nuevos)`:`${found.length} inmuebles encontrados`;
+    toast(msg);closeSearch();
+  }else toast("No se obtuvieron resultados. Intenta de nuevo o agrega inmuebles manualmente con + Agregar.",true);
+
+  // _mcFieldDump persists after search — inspect via console
+}
+
+// ═══ FINCA RAIZ PARSER ═══
+// Data lives in __NEXT_DATA__.props.pageProps.fetchResult (array of listings)
+// Known fields: price.amount, m2/m2Built/m2apto, bedrooms, bathrooms, stratum,
+// locations.location_main.name, link, img/images, title
+function parseFincaRaiz(html){
+  const results=[], seen=new Set();
+  const ndM=html.match(/<script[^>]*id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+  if(!ndM)return results;
+  try{
+    const nd=JSON.parse(ndM[1]);
+    // Walk to find listing arrays (they sit inside pageProps)
+    const arrays=walkForArrays(nd);
+    for(const arr of arrays){
+      for(const it of arr){
+        if(!it||typeof it!=="object")continue;
+        // Skip non-listing items (nav items, menu links, etc.)
+        if(!it.price&&!it.m2&&!it.bedrooms)continue;
+        // Price: item.price can be {amount:N} or a number
+        let price=0;
+        if(typeof it.price==="object"&&it.price)price=it.price.amount||it.price.admin_included||0;
+        else if(typeof it.price==="number")price=it.price;
+        // Skip items with no price (definitely not a listing)
+        if(!price)continue;
+        // Area: try direct fields, then technicalSheet, then parse from description
+        let area=parseFloat(it.m2)||parseFloat(it.m2Built)||parseFloat(it.m2apto)||parseFloat(it.m2Terrain)||0;
+        // Check technicalSheet if area still 0
+        if(!area&&Array.isArray(it.technicalSheet)){
+          for(const ts of it.technicalSheet){
+            const k=(ts.key||ts.name||ts.label||"").toLowerCase();
+            if(k.includes("area")||k.includes("m2")||k.includes("superficie")){area=parseFloat(ts.value)||0;if(area)break}
+          }
+        }
+        if(!area&&typeof it.technicalSheet==="object"&&!Array.isArray(it.technicalSheet)&&it.technicalSheet){
+          area=parseFloat(it.technicalSheet.area)||parseFloat(it.technicalSheet.m2)||parseFloat(it.technicalSheet.built_area)||0;
+        }
+        // Fallback: extract from description text (e.g. "65M²", "65 m2", "65 metros")
+        if(!area&&it.description){
+          const am=it.description.match(/(\d+(?:[.,]\d+)?)\s*(?:M²|m²|m2|mts2|mt2|metros?\s*cuadrados?)/i);
+          if(am)area=parseFloat(am[1].replace(",","."))||0;
+        }
+        // Fallback: extract from title (e.g. "Apartamento de 65m2 en...")
+        if(!area&&it.title){
+          const am=it.title.match(/(\d+(?:[.,]\d+)?)\s*(?:M²|m²|m2|mts2|mt2)/i);
+          if(am)area=parseFloat(am[1].replace(",","."))||0;
+        }
+        // Rooms: bedrooms (not rooms — rooms=0 on some items, bedrooms has the real value)
+        const rooms=parseInt(it.bedrooms)||parseInt(it.rooms)||0;
+        const baths=parseInt(it.bathrooms)||0;
+        const garages=parseInt(it.garages)||parseInt(it.parking)||parseInt(it.parkingLots)||parseInt(it.garajes)||parseInt(it.parqueaderos)||0;
+        // Phone: try multiple field names used by FR
+        const frPhones=[];
+        for(const pk of ["phone","telefono","celular","mobile","contactPhone","whatsapp","phoneNumber","seller_phone","agent_phone"]){
+          const pv=it[pk]||it.contact?.[pk]||it.seller?.[pk]||it.agent?.[pk]||"";
+          if(pv&&String(pv).length>=7){const s=String(pv);if(!frPhones.includes(s))frPhones.push(s)}
+        }
+        if(it.contact){for(const[ck,cv] of Object.entries(it.contact)){if(typeof cv==="string"&&/^\+?\d[\d\s\-]{6,14}$/.test(cv)&&!frPhones.includes(cv))frPhones.push(cv)}}
+        const estrato=parseInt(it.stratum)||0;
+        // Neighborhood from locations.location_main.name
+        let hood="";
+        if(it.locations?.location_main?.name)hood=it.locations.location_main.name;
+        // Coordinates: try multiple known paths in FR data
+        let lat=parseFloat(it.latitude)||parseFloat(it.lat)||0;
+        let lon=parseFloat(it.longitude)||parseFloat(it.lon)||parseFloat(it.lng)||0;
+        if(!lat&&it.coordinates){lat=parseFloat(it.coordinates.lat)||parseFloat(it.coordinates.latitude)||0;lon=parseFloat(it.coordinates.lon)||parseFloat(it.coordinates.lng)||parseFloat(it.coordinates.longitude)||0}
+        if(!lat&&it.location?.coordinates){lat=parseFloat(it.location.coordinates.lat)||parseFloat(it.location.coordinates.latitude)||0;lon=parseFloat(it.location.coordinates.lon)||parseFloat(it.location.coordinates.lng)||0}
+        if(!lat&&it.locations?.location_point){const lp=it.locations.location_point;lat=parseFloat(lp.lat)||parseFloat(lp.latitude)||0;lon=parseFloat(lp.lon)||parseFloat(lp.lng)||parseFloat(lp.longitude)||0}
+        if(!lat&&it.geoLocation){lat=parseFloat(it.geoLocation.lat)||parseFloat(it.geoLocation.latitude)||0;lon=parseFloat(it.geoLocation.lon)||parseFloat(it.geoLocation.lng)||0}
+        // Array format [lon, lat] or [lat, lon] — detect by range (Bogota: lat~4.6, lon~-74)
+        if(!lat&&Array.isArray(it.coordinates)&&it.coordinates.length===2){
+          const[a,b]=it.coordinates.map(Number);
+          if(a>=-90&&a<=90&&b>=-180&&b<=180){lat=a;lon=b}
+          else if(b>=-90&&b<=90&&a>=-180&&a<=180){lat=b;lon=a}
+        }
+        // URL: item.link is a relative slug
+        let url=it.link||it.url||"";
+        if(url&&!url.startsWith("http"))url=`https://www.fincaraiz.com.co/${url.replace(/^\//,"")}`;
+        if(!url)continue;
+        if(seen.has(url))continue;seen.add(url);
+        // Images
+        const imgs=[];
+        if(Array.isArray(it.images))for(const i of it.images.slice(0,5)){if(typeof i==="string")imgs.push(i);else if(i?.image)imgs.push(i.image);else if(i?.url)imgs.push(i.url)}
+        if(!imgs.length&&it.img)imgs.push(it.img);
+        const title=it.title||"";
+        results.push({id:hsh("FR:"+url),source:"Finca Raiz",source_icon:"🏠",title,
+          price:parseInt(price)||0,price_formatted:fCOP(price),area_m2:Math.round(area),
+          rooms,bathrooms:baths,garages,estrato,neighborhood:hood,url,images:imgs,phones:frPhones,lat:lat||0,lon:lon||0,
+          scraped_at:new Date().toISOString(),status:"new",status_changed_at:""});
+      }
+    }
+  }catch{}
+  return results;
+}
+
+// ═══ METROCUADRADO — Multi-strategy scraper ═══
+// Debug findings:
+// - API requires x-api-key HEADER (not query param) → CORS proxies can't forward it
+// - Search page HTML has 122+ /inmueble/ full URLs in RSC data
+// - Detail pages are ALSO RSC → CORS proxy returns shell, not rendered data
+// Strategy: (1) try DIRECT API call with header (might work if MC allows CORS),
+//           (2) extract full URLs from search HTML + parse data FROM THE URL SLUG itself
+const MC_KEY="P1MfFHfQMOtL16Zpg36NcntJYCLFm8FqFfudnavl";
+
+async function fetchMetrocuadrado(c,page,useFilters=false){
+  const results=[];
+  let totalHits=0;
+  const from=(page-1)*50;
+  const FAST=8000;
+
+  // ── Strategy 1: DIRECT API call with x-api-key HEADER (no CORS proxy) ──
+  // This works if MC's API has Access-Control-Allow-Origin headers
+  try{
+    let apiUrl=`https://www.metrocuadrado.com/rest-search/search?realEstateTypeList=${encodeURIComponent(c.type)}&realEstateBusinessList=${encodeURIComponent(c.offer)}&city=${encodeURIComponent(c.city==="bogota"?"bogota d.c.":c.city)}&from=${from}&size=50`;
+    // Server-side filters (real param names from MC's API, discovered via RSC data):
+    // saleRange=[min,max], areaRange=["min","max"], roomList=[2,3], stratumList=[3,4]
+    if(useFilters){
+      if(c.pmin||c.pmax) apiUrl+=`&saleRange=${c.pmin||0},${c.pmax||999999999999}`;
+      if(c.amin||c.amax) apiUrl+=`&areaRange=${c.amin||0},${c.amax||9999}`;
+      if(c.rmin||c.rmax){
+        const rooms=[];for(let r=c.rmin||1;r<=(c.rmax||10);r++)rooms.push(r);
+        apiUrl+=`&roomList=${rooms.join(",")}`;
+      }
+      if(c.estratos&&c.estratos.length>0&&c.estratos.length<6){
+        apiUrl+=`&stratumList=${c.estratos.join(",")}`;
+      }
+      console.log("[MC API] Filtered URL:",apiUrl);
+    }
+    const resp=await fetch(apiUrl,{
+      headers:{"x-api-key":MC_KEY,"Accept":"application/json"},
+      signal:AbortSignal.timeout(FAST)
+    });
+    if(resp.ok){
+      const data=await resp.json();
+      totalHits=data.totalHits||0;
+      // Log response structure for debugging
+      console.log("[MC API] Response keys:",Object.keys(data),"totalHits:",totalHits,"totalEntries:",data.totalEntries||0,"filtered:",useFilters,"page:",page);
+      // Check if filters were actually applied (API echoes them back)
+      if(useFilters&&data.filters){
+        console.log("[MC API] Applied filters: saleRange=",data.filters.saleRange,"roomList=",data.filters.roomList,"stratumList=",data.filters.stratumList,"areaRange=",data.filters.areaRange);
+      }
+      // Try every possible array path
+      // MC API puts real listings in 'recommended' (filtered) or 'results' (unfiltered).
+      // 'results' may be empty or contain only metadata like [{type:"tags"}].
+      let items=[];
+      for(const key of ["recommended","results","data","listings","items"]){
+        if(Array.isArray(data[key])&&data[key].length>0&&(data[key][0].title||data[key][0].link||data[key][0].midinmueble)){
+          items=data[key];console.log("[MC API] Using array key:",key,"count:",items.length);break;
+        }
+      }
+      if(!items.length&&data.hits&&Array.isArray(data.hits.hits))items=data.hits.hits;
+      if(!items.length){
+        for(const k of Object.keys(data)){
+          if(Array.isArray(data[k])&&data[k].length>0){items=data[k];console.log("[MC API] Fallback array key:",k);break}
+        }
+      }
+      if(items.length>0){
+        const firstSrc=items[0]._source||items[0];
+        console.log("[MC API] First item ALL keys:",Object.keys(firstSrc));
+        // Deep dump: show all keys at all levels with their types and values
+        const dumpKeys=(obj,prefix="")=>{
+          const out=[];
+          for(const[k,v] of Object.entries(obj)){
+            const path=prefix?prefix+"."+k:k;
+            if(v&&typeof v==="object"&&!Array.isArray(v)){
+              out.push(...dumpKeys(v,path));
+            }else{
+              const vStr=Array.isArray(v)?`[Array:${v.length}]`:(typeof v==="string"?`"${v.slice(0,50)}"`:`${v}`);
+              out.push(`${path}(${typeof v})=${vStr}`);
+            }
+          }
+          return out;
+        };
+        console.log("[MC API] FULL FIELD DUMP:\n"+dumpKeys(firstSrc).join("\n"));
+        for(const it of items){const src=it._source||it;const l=parseMCItem(src);if(l)results.push(l)}
+        if(results.length)return {items:results,totalHits};
+      }
+    }
+  }catch{} // CORS error expected — that's ok, fall through
+
+  // ── Strategy 2: Extract listings from search page URL slugs ──
+  // The search page HTML contains 100+ /inmueble/SLUG/CODE paths.
+  // The slug encodes: neighborhood, rooms, baths, garages.
+  // We parse what we can from the slug — no detail page fetch needed.
+  const htmlUrl=`https://www.metrocuadrado.com/${c.type}s/${c.offer}/${c.city}/`+(page>1?`?pagina=${page}`:"");
+  try{
+    const html=await cFetch(htmlUrl,FAST);
+    if(html){
+      // Collect ALL unique /inmueble/ paths (broad regex to catch all code formats)
+      const pathSet=new Set();
+      // Unescaped paths in HTML
+      for(const m of html.matchAll(/\/inmueble\/([\w-]+\/[\w-]+)/g))pathSet.add(m[1]);
+      // Escaped paths in RSC strings (\" and \/ escaping)
+      for(const m of html.matchAll(/\\\/inmueble\\\/([\w-]+\\\/[\w-]+)/g))pathSet.add(m[1].replace(/\\\//g,"/"));
+
+      for(const path of pathSet){
+        const parts=path.split("/");
+        if(parts.length<2)continue;
+        const slug=parts[0]; // e.g. "venta-apartamento-bogota-cedro-salazar-3-habitaciones-3-banos-1-garajes"
+        const code=parts[1]; // e.g. "5483-M6417383"
+        const fullUrl=`https://www.metrocuadrado.com/inmueble/${path}`;
+
+        // Parse data from the slug
+        const listing=parseMCSlug(slug,code,fullUrl);
+        if(listing)results.push(listing);
+      }
+    }
+  }catch{}
+
+  return {items:results,totalHits};
+}
+
+// Parse listing data from a Metrocuadrado URL slug
+// Format: venta-apartamento-bogota-NEIGHBORHOOD-N-habitaciones-N-banos[-N-garajes]/CODE
+function parseMCSlug(slug,code,url){
+  if(!slug||!code)return null;
+  const parts=slug.split("-");
+
+  // Extract rooms, baths, garages from slug parts
+  let rooms=0,baths=0,garages=0,hoodParts=[];
+  for(let i=0;i<parts.length;i++){
+    if(parts[i]==="habitaciones"&&i>0)rooms=parseInt(parts[i-1])||0;
+    else if(parts[i]==="banos"&&i>0)baths=parseInt(parts[i-1])||0;
+    else if(parts[i]==="garajes"&&i>0)garages=parseInt(parts[i-1])||0;
+  }
+
+  // Extract neighborhood: everything between city name and first number-habitaciones
+  // Slug pattern: venta-TIPO-CIUDAD-[BARRIO...]-N-habitaciones-...
+  // Find city position (bogota, medellin, etc)
+  const cityIdx=parts.findIndex(p=>["bogota","medellin","cali","barranquilla","bucaramanga","cartagena"].includes(p));
+  if(cityIdx>=0){
+    // Neighborhood is everything after city until we hit a digit (which precedes habitaciones/banos)
+    const hoodStart=cityIdx+1;
+    for(let i=hoodStart;i<parts.length;i++){
+      if(/^\d+$/.test(parts[i]))break; // hit a number (rooms/baths count)
+      if(["habitaciones","banos","garajes","edif"].includes(parts[i]))break;
+      hoodParts.push(parts[i]);
+    }
+  }
+  const hood=hoodParts.map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(" ");
+
+  // Build title
+  const title=hood?`Apartamento en ${hood}`:`Apartamento ${code}`;
+
+  return{id:hsh("MC:"+code),source:"Metrocuadrado",source_icon:"🏢",
+    title,price:0,price_formatted:"Ver en MC",area_m2:0,
+    rooms,bathrooms:baths,garages,estrato:0,neighborhood:hood,
+    url,images:[],phones:[],lat:0,lon:0,scraped_at:new Date().toISOString(),status:"new",status_changed_at:""};
+}
+
+// Fetch estrato + phone for a single MC listing from its detail page/API
+async function fetchMCEnrich(propertyCode,detailUrl,timeout=6000){
+  const result={estrato:0,phones:[]};
+  if(!propertyCode&&!detailUrl)return result;
+
+  // Helper: extract Colombian phone numbers from text
+  function extractPhones(txt){
+    const found=[];
+    // Match Colombian phone patterns: +57XXXXXXXXXX, 3XXXXXXXXX (10 digits starting with 3), (1)XXXXXXX, etc.
+    const matches=txt.match(/(?:\+57\s*)?3\d{2}[\s\-]?\d{3}[\s\-]?\d{4}/g)||[];
+    for(const m of matches){const clean=m.replace(/[\s\-]/g,"");if(!found.includes(clean))found.push(clean)}
+    // Also match tel: links
+    const telMatches=txt.match(/tel:[\+]?[\d\-\s]{7,15}/g)||[];
+    for(const m of telMatches){const clean=m.replace("tel:","").replace(/[\s\-]/g,"");if(clean.length>=7&&!found.includes(clean))found.push(clean)}
+    return found;
+  }
+
+  // Strategy 1: Direct API lookup by property code
+  if(propertyCode){
+    const endpoints=[
+      `https://www.metrocuadrado.com/rest-search/search?midinmueble=${encodeURIComponent(propertyCode)}&size=1`,
+      `https://www.metrocuadrado.com/rest-search/detail/${encodeURIComponent(propertyCode)}`,
+      `https://www.metrocuadrado.com/rest-search/property/${encodeURIComponent(propertyCode)}`
+    ];
+    for(const ep of endpoints){
+      try{
+        const r=await fetch(ep,{headers:{"x-api-key":MC_KEY,"Accept":"application/json"},signal:AbortSignal.timeout(timeout)});
+        if(!r.ok)continue;
+        const txt=await r.text();
+        if(!result.estrato){
+          const em=txt.match(/estrato["\s:]*["']?(\d)/i)||txt.match(/stratum["\s:]*["']?(\d)/i)||txt.match(/strat["\s:]*["']?(\d)/i);
+          if(em){const e=parseInt(em[1]);if(e>=1&&e<=6){result.estrato=e;console.log(`[MC Enrich API] ${propertyCode} → E${e} from ${ep}`)}}
+        }
+        if(!result.phones.length){
+          // Try JSON field extraction first
+          try{const j=JSON.parse(txt);const jStr=JSON.stringify(j);result.phones=extractPhones(jStr)}catch{}
+          // Also try phone/telefono fields in the raw text
+          const phoneFields=txt.match(/(?:phone|telefono|celular|mobile|whatsapp)["\s:]*["']?([\+\d][\d\s\-]{6,14})/gi)||[];
+          for(const pf of phoneFields){const num=pf.replace(/.*?["':]\s*/,"").replace(/[\s\-"']/g,"");if(num.length>=7&&!result.phones.includes(num))result.phones.push(num)}
+        }
+        if(result.estrato&&result.phones.length)return result;
+      }catch{}
+    }
+  }
+
+  // Strategy 1.5: Try contact-specific API endpoints
+  if(propertyCode&&!result.phones.length){
+    const contactEps=[
+      `https://www.metrocuadrado.com/rest-search/contact/${encodeURIComponent(propertyCode)}`,
+      `https://www.metrocuadrado.com/rest-search/property/${encodeURIComponent(propertyCode)}/contact`,
+      `https://www.metrocuadrado.com/rest-search/detail/${encodeURIComponent(propertyCode)}/contact`,
+      `https://www.metrocuadrado.com/rest-clientOffer/contact/${encodeURIComponent(propertyCode)}`,
+      `https://www.metrocuadrado.com/rest-clientOffer/property/${encodeURIComponent(propertyCode)}`
+    ];
+    for(const ep of contactEps){
+      try{
+        const r=await fetch(ep,{headers:{"x-api-key":MC_KEY,"Accept":"application/json"},signal:AbortSignal.timeout(Math.min(timeout,4000))});
+        if(!r.ok)continue;
+        const txt=await r.text();
+        const phones=extractPhones(txt);
+        // Also try explicit field extraction
+        try{const j=JSON.parse(txt);for(const k of["phone","telefono","celular","mobile","whatsapp","phoneNumber","contactPhone"]){const v=j[k]||j.contact?.[k]||j.data?.[k]||"";if(v&&String(v).length>=7&&!phones.includes(String(v)))phones.push(String(v))}}catch{}
+        if(phones.length){result.phones=phones;console.log(`[MC Contact API] ${propertyCode} → ${phones.join(",")} from ${ep}`);break}
+      }catch{}
+    }
+  }
+
+  // Strategy 2: Fetch detail page HTML via CORS proxy
+  const fullUrl=detailUrl?(detailUrl.startsWith("http")?detailUrl:`https://www.metrocuadrado.com${detailUrl.startsWith("/")?detailUrl:"/"+detailUrl}`):"";
+  if(fullUrl){
+    try{
+      const html=await cFetch(fullUrl,timeout);
+      if(html){
+        if(!result.estrato){const e=extractEstratoFromHTML(html);if(e>=1&&e<=6){result.estrato=e;console.log(`[MC Enrich HTML] ${propertyCode||fullUrl} → E${e}`)}}
+        if(!result.phones.length)result.phones=extractPhones(html);
+      }
+    }catch{}
+  }
+
+  return result;
+}
+
+// Extract estrato from MC detail page HTML using multiple strategies
+function extractEstratoFromHTML(html){
+  if(!html)return 0;
+
+  // 1) ld+json structured data
+  const ldMs=[...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
+  for(const[,raw] of ldMs){
+    try{
+      const txt=JSON.stringify(JSON.parse(raw)).toLowerCase();
+      const m=txt.match(/estrato["\s:]+(\d)/);
+      if(m){const e=parseInt(m[1]);if(e>=1&&e<=6)return e}
+    }catch{}
+  }
+
+  // 2) RSC flight data (self.__next_f.push chunks) — may contain escaped quotes
+  for(const m of html.matchAll(/self\.__next_f\.push\(\[[\d,]*"((?:[^"\\]|\\.)*)"\]\)/g)){
+    try{
+      const chunk=m[1].replace(/\\"/g,'"').replace(/\\n/g,"\n").replace(/\\\\/g,"\\");
+      const em=chunk.match(/estrato["\s:]*(\d)/i)||chunk.match(/stratu[ms]["\s:]*(\d)/i);
+      if(em){const e=parseInt(em[1]);if(e>=1&&e<=6)return e}
+    }catch{}
+  }
+
+  // 3) Direct text match: "Estrato N", "Estrato: N", "estrato-3" anywhere in HTML
+  const textMatch=html.match(/[Ee]strato[\s:\-_=]*["']?(\d)/);
+  if(textMatch){const e=parseInt(textMatch[1]);if(e>=1&&e<=6)return e}
+
+  // 4) Meta tags, data attributes, JSON values
+  const metaMatch=html.match(/estrato["=:\-_\s]*["']?(\d)/i);
+  if(metaMatch){const e=parseInt(metaMatch[1]);if(e>=1&&e<=6)return e}
+
+  return 0;
+}
+
+
+function parseMCItem(it){
+  if(!it||typeof it!=="object")return null;
+  // Smart field detection: scan ALL keys recursively and auto-detect by keyword + value range
+  let title="",price=0,area=0,rooms=0,baths=0,garages=0,estrato=0,hood="",url="",lat=0,lon=0;
+  const imgs=[],phones=[];
+
+  // Flatten nested objects into a single list of [fullKey, value] pairs (2 levels deep)
+  const flat=[];
+  for(const[k,v] of Object.entries(it)){
+    flat.push([k,v]);
+    if(v&&typeof v==="object"&&!Array.isArray(v)){
+      for(const[k2,v2] of Object.entries(v)){
+        flat.push([k+"."+k2,v2]);
+        if(v2&&typeof v2==="object"&&!Array.isArray(v2)){
+          for(const[k3,v3] of Object.entries(v2))flat.push([k+"."+k2+"."+k3,v3]);
+        }
+      }
+    }
+  }
+
+  // Track which key was used for baths to avoid confusing with rooms
+  let bathKey="";
+
+  for(const[k,v] of flat){
+    const kl=k.toLowerCase();
+    const nv=typeof v==="number"?v:(typeof v==="string"?parseFloat(v):0);
+
+    // Title
+    if(!title&&typeof v==="string"&&v.length>5&&(kl.endsWith("title")||kl.endsWith("name")||kl.endsWith("titulo")||kl.includes("propertytitle")||kl.includes("nombr")))title=v;
+    // Price (any field with price/precio/valor keyword AND value > 1M COP)
+    if(!price&&(kl.includes("price")||kl.includes("precio")||kl.includes("valor")||kl.includes("sale"))&&!kl.includes("currency")&&!kl.includes("format")&&!kl.includes("m2")){
+      if(typeof v==="number"&&v>1e6)price=v;
+      else if(typeof v==="string"&&nv>1e6)price=nv;
+      else if(typeof v==="object"&&v!==null&&!Array.isArray(v)){
+        for(const v2 of Object.values(v)){if(typeof v2==="number"&&v2>1e6){price=v2;break}}
+      }
+    }
+    // Area (field with area/m2/dimension keyword AND value 5-10000)
+    if(!area&&(kl.includes("area")||kl.includes("m2")||kl.includes("dimension")||kl.includes("size")||kl.includes("superficie")||kl.includes("builtarea")||kl.includes("totalarea"))&&nv>=5&&nv<=10000)area=Math.round(nv);
+    // Rooms (expanded keywords: room/habit/alcob/bedroom/recam/cuart/dorm/piez + value 1-30)
+    if(!rooms&&(kl.includes("room")&&!kl.includes("bath")||kl.includes("habit")||kl.includes("alcob")||kl.includes("bedroom")||kl.includes("recam")||kl.includes("cuart")||kl.includes("dormit")||kl.includes("pieza"))&&nv>=1&&nv<=30)rooms=Math.round(nv);
+    // Baths (field with bath/bano keyword AND value 1-30)
+    if(!baths&&(kl.includes("bath")||kl.includes("bano")||kl.includes("baño")||kl.includes("sanit")||kl.includes("wc"))&&nv>=1&&nv<=30){baths=Math.round(nv);bathKey=kl}
+    // Garages/parking (field with garage/garaje/parking/parqueadero keyword AND value 0-20)
+    if(!garages&&(kl.includes("garage")||kl.includes("garaje")||kl.includes("parking")||kl.includes("parqueadero")||kl.includes("estacionamiento"))&&nv>=0&&nv<=20)garages=Math.round(nv);
+    // Estrato (field with estrato/stratum/socio keyword AND value 1-6)
+    if(!estrato&&(kl.includes("estrato")||kl.includes("stratum")||kl.includes("strat")||kl.includes("socio"))&&nv>=1&&nv<=6)estrato=Math.round(nv);
+    // Neighborhood (string field with barrio/neighbor/sector/zone/location/comuna keyword)
+    if(!hood&&typeof v==="string"&&v.length>1&&v.length<100&&(kl.includes("barrio")||kl.includes("neighbor")||kl.includes("sector")||kl.includes("zona")||kl.includes("comuna")||kl.includes("localidad")||(kl.includes("location")&&!kl.includes("point")&&!kl.includes("lat")&&!kl.includes("lon"))))hood=v;
+    // URL (string field with link/url/detail keyword, OR any string containing /inmueble/)
+    if(!url&&typeof v==="string"&&v.length>10&&!kl.includes("image")){
+      if(kl.includes("link")||kl.includes("url")||kl.includes("detail")||kl.includes("href"))url=v;
+      else if(v.includes("/inmueble/"))url=v;
+    }
+    // Images
+    if(kl.includes("image")||kl.includes("img")||kl.includes("foto")||kl.includes("photo")||kl.includes("picture")||kl.includes("thumbnail")){
+      if(typeof v==="string"&&(v.startsWith("http")||v.startsWith("//")))imgs.push(v.startsWith("//")?("https:"+v):v);
+      else if(Array.isArray(v))for(const i of v.slice(0,5)){if(typeof i==="string"&&i.startsWith("http"))imgs.push(i);else if(i&&typeof i==="object"){const iu=i.url||i.image||i.src||"";if(iu)imgs.push(iu)}}
+    }
+    // Latitude (field with lat/latitude keyword AND value in -90..90 range, typical Bogota ~4.6)
+    if(!lat&&(kl.includes("latitud")||kl==="lat"||kl.endsWith(".lat")||kl.includes("latitude"))&&typeof v==="number"&&v>=-90&&v<=90&&v!==0)lat=v;
+    // Longitude (field with lon/lng/longitude keyword AND value in -180..180, typical Bogota ~-74)
+    if(!lon&&(kl.includes("longitud")||kl==="lon"||kl==="lng"||kl.endsWith(".lon")||kl.endsWith(".lng")||kl.includes("longitude"))&&typeof v==="number"&&v>=-180&&v<=180&&v!==0)lon=v;
+    // Phone/contact (field with phone/telefono/celular/mobile/whatsapp/contact keyword)
+    if((kl.includes("phone")||kl.includes("telefono")||kl.includes("teléfono")||kl.includes("celular")||kl.includes("mobile")||kl.includes("movil")||kl.includes("móvil")||kl.includes("whatsapp")||kl.includes("contacto"))&&typeof v==="string"&&v.length>=7&&v.length<=20){const clean=v.replace(/[\s\-\(\)\.]/g,"");if(/^\+?\d{7,15}$/.test(clean)&&!phones.includes(v))phones.push(v)}
+    if((kl.includes("phone")||kl.includes("telefono")||kl.includes("celular")||kl.includes("mobile")||kl.includes("whatsapp"))&&typeof v==="number"&&v>1000000){const s=String(v);if(!phones.includes(s))phones.push(s)}
+  }
+
+  // Fallback: scan ALL numeric fields for likely price (>1M, not an ID/lat/lon)
+  if(!price){
+    for(const[k,v] of flat){
+      if(typeof v==="number"&&v>1e6&&v<5e10){
+        const kl=k.toLowerCase();
+        if(!kl.includes("id")&&!kl.includes("lat")&&!kl.includes("lon")&&!kl.includes("code")&&!kl.includes("phone")&&!kl.includes("postal")){price=v;break}
+      }
+    }
+  }
+  // Fallback: scan for area-like fields (15-500 range, not rooms/baths/estrato)
+  if(!area){
+    for(const[k,v] of flat){
+      if(typeof v==="number"&&v>=15&&v<=500){
+        const kl=k.toLowerCase();
+        if(!kl.includes("room")&&!kl.includes("bath")&&!kl.includes("hab")&&!kl.includes("bano")&&!kl.includes("estrato")&&!kl.includes("strat")&&!kl.includes("floor")&&!kl.includes("piso")&&!kl.includes("garage")&&!kl.includes("park")&&!kl.includes("age")&&!kl.includes("anti")){area=Math.round(v);break}
+        }
+    }
+  }
+  // Fallback for rooms: if baths found but rooms=0, look for any small int (1-10) on a
+  // field that isn't the baths field, estrato, floor, garage, or age
+  if(!rooms&&baths>0){
+    for(const[k,v] of flat){
+      if(typeof v==="number"&&v>=1&&v<=10&&Math.floor(v)===v){
+        const kl=k.toLowerCase();
+        if(kl===bathKey)continue;
+        if(kl.includes("bath")||kl.includes("bano")||kl.includes("baño"))continue;
+        if(kl.includes("estrato")||kl.includes("strat")||kl.includes("socio"))continue;
+        if(kl.includes("floor")||kl.includes("piso")||kl.includes("nivel"))continue;
+        if(kl.includes("garage")||kl.includes("park")||kl.includes("garaje"))continue;
+        if(kl.includes("age")||kl.includes("anti")||kl.includes("año"))continue;
+        if(kl.includes("id")||kl.includes("code")||kl.includes("page")||kl.includes("from")||kl.includes("size"))continue;
+        if(kl.includes("image")||kl.includes("photo")||kl.includes("total"))continue;
+        // This is likely rooms
+        console.log(`[MC parseMCItem] Rooms fallback: key="${k}" value=${v}`);
+        rooms=Math.round(v);
+        break;
+      }
+    }
+  }
+  // Debug: if rooms still 0, log all small-integer fields so we can identify the right one
+  if(!rooms){
+    const smallInts=flat.filter(([k,v])=>typeof v==="number"&&v>=1&&v<=10&&Math.floor(v)===v).map(([k,v])=>`${k}=${v}`);
+    if(smallInts.length>0)console.log(`[MC parseMCItem] rooms=0, small ints:`,smallInts.join(", "));
+  }
+
+  // URL slug fallback: extract rooms/baths/estrato from URL pattern like
+  // /inmueble/venta-apartamento-bogota-BARRIO-N-habitaciones-N-banos[-N-garajes]/CODE
+  // or from title that might contain similar patterns
+  const slugSrc=url||title||"";
+  if(!rooms){const rm=slugSrc.match(/(\d+)-habitacion/i);if(rm)rooms=parseInt(rm[1])}
+  if(!baths){const bm=slugSrc.match(/(\d+)-bano/i);if(bm)baths=parseInt(bm[1])}
+  if(!garages){const gm=slugSrc.match(/(\d+)-garaje/i);if(gm)garages=parseInt(gm[1])}
+  if(!estrato){const em=slugSrc.match(/estrato-(\d)/i);if(em)estrato=parseInt(em[1])}
+
+  // Store debug info for first item to display in UI
+  if(!window._mcFieldDump){
+    window._mcFieldDump=flat.map(([k,v])=>{
+      const t=Array.isArray(v)?"arr":(typeof v);
+      const vs=t==="object"?"{obj}":(t==="arr"?`[${v.length}]`:(typeof v==="string"?`"${String(v).slice(0,60)}"`:String(v)));
+      return `${k} (${t}) = ${vs}`;
+    }).join("\n");
+    console.log("[MC DEBUG] First item fields stored in window._mcFieldDump");
+  }
+
+  if(url&&!url.startsWith("http"))url=`https://www.metrocuadrado.com${url.startsWith("/")?url:"/"+url}`;
+  if(!url&&!title)return null;
+  // Extract property code for detail API lookups
+  const propCode=it.midinmueble||it.propertyCode||it.code||"";
+  return{id:hsh("MC:"+(url||title)),source:"Metrocuadrado",source_icon:"🏢",title,
+    price:parseInt(price)||0,price_formatted:fCOP(price),area_m2:area,
+    rooms,bathrooms:baths,garages,estrato,neighborhood:hood,url:url||"",images:imgs.slice(0,5),
+    phones,propertyCode:propCode,lat:lat||0,lon:lon||0,
+    scraped_at:new Date().toISOString(),status:"new",status_changed_at:""};
+}
+
+// ═══ CIENCUADRAS PARSER ═══
+// Data lives in ld+json @type:ItemList → itemListElement[]
+// Each item: .item.name, .item.url, .item.image,
+//   .item.offers.price, .item.offers.itemOffered.floorSize.value,
+//   .item.offers.itemOffered.numberOfBathroomsTotal
+// Also has &q;-encoded JSON with full listing data in a script tag
+function parseCiencuadras(html){
+  const results=[], seen=new Set();
+
+  // 1) Parse ld+json ItemList (guaranteed structure)
+  const ldMs=[...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
+  for(const [,raw] of ldMs){
+    try{
+      const ld=JSON.parse(raw);
+      if(ld["@type"]!=="ItemList"||!ld.itemListElement)continue;
+      for(const el of ld.itemListElement){
+        const it=el.item||el;
+        if(!it?.name&&!it?.url)continue;
+        const offered=it.offers?.itemOffered||{};
+        const price=parseInt(it.offers?.price)||0;
+        const area=parseInt(offered.floorSize?.value)||0;
+        const baths=parseInt(offered.numberOfBathroomsTotal)||0;
+        const url=it.url||"";
+        if(!url||seen.has(url))continue;seen.add(url);
+        const img=it.image||offered.image||"";
+        results.push({id:hsh("CC:"+url),source:"Ciencuadras",source_icon:"🏡",
+          title:it.name||"",price,price_formatted:fCOP(price),area_m2:area,
+          rooms:0,bathrooms:baths,garages:0,estrato:0,neighborhood:"",
+          url,images:img?[img]:[],phones:[],
+          scraped_at:new Date().toISOString(),status:"new",status_changed_at:""});
+      }
+    }catch{}
+  }
+
+  // 2) Try the &q;-encoded script data for richer details (rooms, estrato, neighborhood)
+  const decoded=html.replace(/&q;/g,'"');
+  try{
+    // Find the "results-..." key and extract balanced JSON object after "data":
+    const dataIdx=decoded.indexOf('"data":{',decoded.indexOf('"results-'));
+    if(dataIdx>-1){
+      // Extract balanced JSON starting from the { after "data":
+      let start=dataIdx+7,depth2=0,end=start;
+      for(let i=start;i<decoded.length&&i<start+200000;i++){
+        if(decoded[i]==='{')depth2++;
+        else if(decoded[i]==='}'){depth2--;if(depth2===0){end=i+1;break}}
+      }
+      if(end>start){
+        const d=JSON.parse(decoded.slice(start,end));
+        const items=[...(d.highlights||[]),...(d.results||[]),...(d.items||[])];
+        for(const it of items){
+          const url=it.url?`https://www.ciencuadras.com${it.url.startsWith("/")?it.url:"/"+it.url}`:"";
+          if(!url)continue;
+          // Extract fields — Ciencuadras uses various field names
+          const rooms=parseInt(it.rooms)||parseInt(it.bedrooms)||parseInt(it.habitaciones)||parseInt(it.numHabitaciones)||0;
+          const estrato=parseInt(it.estrato)||parseInt(it.stratum)||parseInt(it.socioEconomicStratus)||0;
+          const hood=it.neighborhood||it.barrio||it.sector||it.zone||it.nombreBarrio||"";
+          const area=parseInt(it.area)||parseInt(it.m2)||parseInt(it.builtArea)||parseInt(it.areaPrivada)||parseInt(it.areaConstruida)||0;
+          const baths=parseInt(it.bathrooms)||parseInt(it.banos)||parseInt(it.numBanos)||0;
+          const garages=parseInt(it.garages)||parseInt(it.parking)||parseInt(it.garajes)||parseInt(it.parqueaderos)||0;
+          // Enrich existing ld+json results or add new ones
+          const existing=results.find(r=>r.url===url);
+          if(existing){
+            if(rooms&&!existing.rooms)existing.rooms=rooms;
+            if(estrato&&!existing.estrato)existing.estrato=estrato;
+            if(hood&&!existing.neighborhood)existing.neighborhood=hood;
+            if(area&&!existing.area_m2)existing.area_m2=area;
+            if(baths&&!existing.bathrooms)existing.bathrooms=baths;
+            if(garages&&!existing.garages)existing.garages=garages;
+          }else if(!seen.has(url)){
+            seen.add(url);
+            let price=parseInt(it.price)||parseInt(it.salePrice)||parseInt(it.precio)||0;
+            results.push({id:hsh("CC:"+url),source:"Ciencuadras",source_icon:"🏡",
+              title:it.title||it.name||it.nombre||"",price,price_formatted:fCOP(price),area_m2:area,
+              rooms,bathrooms:baths,garages,estrato,neighborhood:hood,url,
+              images:it.image?[it.image]:[],phones:[],
+              scraped_at:new Date().toISOString(),status:"new",status_changed_at:""});
+          }
+        }
+      }
+    }
+  }catch{}
+
+  // Extract neighborhood from title if missing (format: "Tipo en venta - Ciudad/BARRIO")
+  for(const r of results){
+    if(!r.neighborhood&&r.title){
+      const m=r.title.match(/[-–]\s*[^/]+\/(.+)$/);
+      if(m)r.neighborhood=m[1].trim();
+    }
+  }
+
+  return results;
+}
+
+// ═══ HELPER: walk an object tree to find arrays of listing objects ═══
+function walkForArrays(obj,depth=0){
+  if(depth>8||!obj||typeof obj!=="object")return[];
+  const found=[];
+  if(Array.isArray(obj)){
+    if(obj.length>=1&&obj[0]&&typeof obj[0]==="object"&&!Array.isArray(obj[0])){
+      const f=obj[0];
+      // Must have price AND at least one property detail field (m2, bedrooms, or bathrooms)
+      // This avoids matching nav menus, header_links, breadcrumbs, etc.
+      const hasPrice=(f.price!==undefined&&f.price!==null);
+      const hasDetails=(f.m2!==undefined||f.bedrooms!==undefined||f.bathrooms!==undefined||f.rooms!==undefined);
+      if(hasPrice&&hasDetails)found.push(obj);
+    }
+  }else{
+    for(const k of Object.keys(obj))found.push(...walkForArrays(obj[k],depth+1));
+  }
+  return found;
+}
+
+// ═══ MANUAL ADD ═══
+function addManual(){
+  const url=document.getElementById("add-url").value.trim();
+  const title=document.getElementById("add-title").value.trim()||"Inmueble agregado";
+  const price=+document.getElementById("add-price").value||0;
+  const area=+document.getElementById("add-area").value||0;
+  const rooms=+document.getElementById("add-rooms").value||0;
+  const baths=+document.getElementById("add-baths").value||0;
+  const estrato=+document.getElementById("add-estrato").value||0;
+  const hood=document.getElementById("add-hood").value.trim();
+  if(!url&&!title){toast("Agrega al menos un URL o titulo",true);return}
+  const src=url.includes("metrocuadrado")?"Metrocuadrado":url.includes("fincaraiz")?"Finca Raiz":url.includes("ciencuadras")?"Ciencuadras":"Manual";
+  const icon=src==="Metrocuadrado"?"🏢":src==="Finca Raiz"?"🏠":src==="Ciencuadras"?"🏡":"📌";
+  const l={id:hsh("manual:"+url+title+Date.now()),source:src,source_icon:icon,title,
+    price,price_formatted:fCOP(price),area_m2:area,rooms,bathrooms:baths,garages:0,estrato,
+    neighborhood:hood,url,images:[],phones:[],lat:0,lon:0,scraped_at:new Date().toISOString(),status:"new",status_changed_at:""};
+  listings.unshift(l);save();render();closeAdd();
+  document.querySelectorAll("#add-overlay input").forEach(i=>i.value="");
+  toast("Inmueble agregado");
+}
+
+// ═══ PERSISTENCE ═══
+function loadSt(){try{return JSON.parse(localStorage.getItem(SK))||{}}catch{return{}}}
+function saveSt(){const s={};listings.forEach(l=>{if(l.status!=="new"||l.first_seen||l.favorite||l.read||l.phones?.length||l.notes)s[l.id]={s:l.status,t:l.status_changed_at,fs:l.first_seen||"",fv:!!l.favorite,fg:l.first_seen_gen||0,rd:!!l.read,ph:l.phones&&l.phones.length?l.phones:undefined,nt:l.notes||undefined}});localStorage.setItem(SK,JSON.stringify(s))}
+function applySt(d){const s=loadSt();d.forEach(l=>{if(s[l.id]){l.status=s[l.id].s;l.status_changed_at=s[l.id].t;if(s[l.id].fs&&!l.first_seen)l.first_seen=s[l.id].fs;if(s[l.id].fv)l.favorite=true;if(s[l.id].fg!=null)l.first_seen_gen=s[l.id].fg;if(s[l.id].rd)l.read=true;if(s[l.id].ph&&(!l.phones||!l.phones.length))l.phones=s[l.id].ph;if(s[l.id].nt&&!l.notes)l.notes=s[l.id].nt}else if(!l.status)l.status="new"});return d}
+function save(){try{localStorage.setItem(LK,JSON.stringify(listings))}catch{};saveSt()}
+function load(){try{const r=localStorage.getItem(LK);if(r){listings=applySt(JSON.parse(r));return true}}catch{};return false}
+function merge(items){const now=new Date().toISOString();const ex={};const st=loadSt();listings.forEach(l=>ex[l.id]=l);for(const l of items){if(ex[l.id]){l.status=ex[l.id].status;l.status_changed_at=ex[l.id].status_changed_at;l.first_seen=ex[l.id].first_seen||now;l.first_seen_gen=ex[l.id].first_seen_gen!=null?ex[l.id].first_seen_gen:searchGen;if(ex[l.id].favorite)l.favorite=true;if(ex[l.id].read)l.read=true;if(!l.lat&&ex[l.id].lat){l.lat=ex[l.id].lat;l.lon=ex[l.id].lon}if((!l.phones||!l.phones.length)&&ex[l.id].phones&&ex[l.id].phones.length)l.phones=ex[l.id].phones;if(ex[l.id].notes)l.notes=ex[l.id].notes}else if(st[l.id]){if(st[l.id].fs&&!l.first_seen)l.first_seen=st[l.id].fs;l.first_seen_gen=st[l.id].fg!=null?st[l.id].fg:0;if(st[l.id].fv)l.favorite=true;if(st[l.id].rd)l.read=true;if(st[l.id].s)l.status=st[l.id].s;if(st[l.id].t)l.status_changed_at=st[l.id].t;if(st[l.id].ph&&(!l.phones||!l.phones.length))l.phones=st[l.id].ph;if(st[l.id].nt)l.notes=st[l.id].nt;if(!l.status)l.status="new"}else{l.first_seen=now;l.first_seen_gen=searchGen}l.last_seen=now;ex[l.id]=l}listings=Object.values(ex)}
+function clearCache(){if(!confirm("¿Limpiar todos los inmuebles guardados? (Los contactados/descartados se perderán)"))return;listings=[];localStorage.removeItem(LK);localStorage.removeItem(SK);save();render();toast("Cache limpiado — haz una nueva búsqueda")}
+
+// ═══ FILTER/SORT ═══
+// Apply only the search-criteria display filters (price, area, rooms, estrato) — no status/query/sort
+function getFilteredBase(){
+  let r=[...listings];
+  let cfg;
+  try{cfg=readCfg()}catch{}
+  if(!cfg){try{cfg=JSON.parse(localStorage.getItem(CK))}catch{}}
+  if(cfg){
+    if(cfg.pmin>0)r=r.filter(l=>!l.price||l.price>=cfg.pmin);
+    if(cfg.pmax>0)r=r.filter(l=>!l.price||l.price<=cfg.pmax);
+    if(cfg.amin>0)r=r.filter(l=>!l.area_m2||l.area_m2>=cfg.amin);
+    if(cfg.amax>0)r=r.filter(l=>!l.area_m2||l.area_m2<=cfg.amax);
+    if(cfg.rmin>0)r=r.filter(l=>!l.rooms||l.rooms>=cfg.rmin);
+    if(cfg.rmax>0)r=r.filter(l=>!l.rooms||l.rooms<=cfg.rmax);
+    if(cfg.bmin>0)r=r.filter(l=>!l.bathrooms||l.bathrooms>=cfg.bmin);
+    if(cfg.bmax>0&&cfg.bmax<10)r=r.filter(l=>!l.bathrooms||l.bathrooms<=cfg.bmax);
+    if(cfg.gmin>0)r=r.filter(l=>(l.garages||0)>=cfg.gmin);
+    if(cfg.gmax>0&&cfg.gmax<10)r=r.filter(l=>(l.garages||0)<=cfg.gmax);
+    if(cfg.estratos&&cfg.estratos.length>0&&cfg.estratos.length<6)r=r.filter(l=>!l.estrato||cfg.estratos.includes(l.estrato));
+  }
+  return r;
+}
+function getFiltered(){
+  let r=[...listings];
+  if(filter==="favorite")r=r.filter(l=>l.favorite);
+  else if(filter!=="all")r=r.filter(l=>l.status===filter);
+  // Apply display filters ONLY when the filter toggle is active
+  if(displayFiltersOn){
+    let cfg;
+    try{cfg=readCfg()}catch{}
+    if(!cfg){try{cfg=JSON.parse(localStorage.getItem(CK))}catch{}}
+    if(cfg){
+      const before=r.length;
+      if(cfg.pmin>0){const b=r.length;r=r.filter(l=>!l.price||l.price>=cfg.pmin);console.log(`pmin ${cfg.pmin}: ${b}→${r.length}`)}
+      if(cfg.pmax>0){const b=r.length;r=r.filter(l=>!l.price||l.price<=cfg.pmax);console.log(`pmax ${cfg.pmax}: ${b}→${r.length}`)}
+      if(cfg.amin>0){const b=r.length;r=r.filter(l=>!l.area_m2||l.area_m2>=cfg.amin);console.log(`amin ${cfg.amin}: ${b}→${r.length}`)}
+      if(cfg.amax>0){const b=r.length;r=r.filter(l=>!l.area_m2||l.area_m2<=cfg.amax);console.log(`amax ${cfg.amax}: ${b}→${r.length}`)}
+      if(cfg.rmin>0){const b=r.length;r=r.filter(l=>!l.rooms||l.rooms>=cfg.rmin);console.log(`rmin ${cfg.rmin}: ${b}→${r.length}`)}
+      if(cfg.rmax>0){const b=r.length;r=r.filter(l=>!l.rooms||l.rooms<=cfg.rmax);console.log(`rmax ${cfg.rmax}: ${b}→${r.length}`)}
+      if(cfg.bmin>0){const b=r.length;r=r.filter(l=>!l.bathrooms||l.bathrooms>=cfg.bmin);console.log(`bmin ${cfg.bmin}: ${b}→${r.length}`)}
+      if(cfg.bmax>0&&cfg.bmax<10){const b=r.length;r=r.filter(l=>!l.bathrooms||l.bathrooms<=cfg.bmax);console.log(`bmax ${cfg.bmax}: ${b}→${r.length}`)}
+      if(cfg.gmin>0){const b=r.length;r=r.filter(l=>(l.garages||0)>=cfg.gmin);console.log(`gmin ${cfg.gmin}: ${b}→${r.length}`)}
+      if(cfg.gmax>0&&cfg.gmax<10){const b=r.length;r=r.filter(l=>(l.garages||0)<=cfg.gmax);console.log(`gmax ${cfg.gmax}: ${b}→${r.length}`)}
+      if(cfg.estratos&&cfg.estratos.length>0&&cfg.estratos.length<6){
+        const b=r.length;r=r.filter(l=>!l.estrato||cfg.estratos.includes(l.estrato));
+        console.log(`estratos [${cfg.estratos}]: ${b}→${r.length}`)
+      }
+      console.log(`Filter total: ${before}→${r.length}, cfg:`,JSON.stringify({pmin:cfg.pmin,pmax:cfg.pmax,amin:cfg.amin,amax:cfg.amax,rmin:cfg.rmin,rmax:cfg.rmax,bmin:cfg.bmin,bmax:cfg.bmax,gmin:cfg.gmin,gmax:cfg.gmax,estratos:cfg.estratos}));
+    }
+  }
+  // Proximity filter: compute distance and filter by radius
+  if(proximityOn&&userLat&&userLon){
+    r.forEach(l=>{l._dist=listingDist(l)});
+    r=r.filter(l=>l._dist===null||l._dist<=proximityKm);
+  }
+  if(query){const q=query.toLowerCase();r=r.filter(l=>(l.title||"").toLowerCase().includes(q)||(l.neighborhood||"").toLowerCase().includes(q)||(l.source||"").toLowerCase().includes(q))}
+  switch(sort){
+    case"price-asc":r.sort((a,b)=>a.price-b.price);break;
+    case"price-desc":r.sort((a,b)=>b.price-a.price);break;
+    case"area-desc":r.sort((a,b)=>(b.area_m2||0)-(a.area_m2||0));break;
+    case"ppm2-asc":r.sort((a,b)=>(a.area_m2?a.price/a.area_m2:Infinity)-(b.area_m2?b.price/b.area_m2:Infinity));break;
+    case"estrato-asc":r.sort((a,b)=>(a.estrato||0)-(b.estrato||0));break;
+    case"estrato-desc":r.sort((a,b)=>(b.estrato||0)-(a.estrato||0));break;
+    case"nearest":r.sort((a,b)=>(a._dist??Infinity)-(b._dist??Infinity));break;
+    case"newest":r.sort((a,b)=>(b.scraped_at||"").localeCompare(a.scraped_at||""));break;
+  }
+  return r;
+}
+
+// ═══ RENDER ═══
+function render(){
+  // Count from the display-filtered pool so stats match what the user sees in the list
+  const pool=displayFiltersOn?getFilteredBase():listings;
+  const c={new:0,contacted:0,discarded:0};let favCount=0;pool.forEach(l=>{if(c[l.status]!==undefined)c[l.status]++;if(l.favorite)favCount++});
+  document.getElementById("stat-new").textContent=`${c.new} nuevos`;
+  document.getElementById("stat-fav").textContent=`${favCount} favoritos`;
+  document.getElementById("stat-contact").textContent=`${c.contacted} contactados`;
+  document.getElementById("stat-discard").textContent=`${c.discarded} descartados`;
+  // Show last search time
+  const ls=localStorage.getItem(LSK);
+  const lastEl=document.getElementById("stat-last");
+  if(ls&&lastEl){
+    const d=new Date(ls);
+    lastEl.textContent=`Última búsqueda: ${d.toLocaleDateString("es-CO",{day:"numeric",month:"short"})} ${d.toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"})}`;
+  }
+  renderList();if(selectedId)renderDetail(listings.find(l=>l.id===selectedId));
+  updateFilterCount();
+  if(typeof checkReminder==="function")checkReminder();
+}
+function renderList(){
+  const el=document.getElementById("list"),f=getFiltered();
+  if(!listings.length){el.innerHTML=`<div class="empty-state"><h2>Bienvenido a Flip Finder</h2><p>Haz click en <strong>Buscar apartamentos</strong> para empezar, o <strong>+ Agregar</strong> para ingresar un inmueble.</p></div>`;return}
+  if(!f.length){
+    // Show helpful diagnostic when filter yields 0
+    let diag="";
+    if(displayFiltersOn){
+      try{
+        const cfg=readCfg();
+        if(cfg){
+          let all=[...listings];if(filter!=="all")all=all.filter(l=>l.status===filter);
+          const a1=all.filter(l=>!l.price||l.price>=cfg.pmin);
+          const a2=a1.filter(l=>!l.price||l.price<=cfg.pmax);
+          const a3=a2.filter(l=>!l.area_m2||l.area_m2>=cfg.amin);
+          const a4=a3.filter(l=>!l.area_m2||l.area_m2<=cfg.amax);
+          const a5=a4.filter(l=>!l.rooms||l.rooms>=cfg.rmin);
+          const a6=a5.filter(l=>!l.rooms||l.rooms<=cfg.rmax);
+          const a7=cfg.estratos&&cfg.estratos.length>0&&cfg.estratos.length<6?a6.filter(l=>!l.estrato||cfg.estratos.includes(l.estrato)):a6;
+          const a8=cfg.bmin>0?a7.filter(l=>!l.bathrooms||l.bathrooms>=cfg.bmin):a7;
+          const a9=cfg.bmax>0&&cfg.bmax<10?a8.filter(l=>!l.bathrooms||l.bathrooms<=cfg.bmax):a8;
+          const a10=cfg.gmin>0?a9.filter(l=>(l.garages||0)>=cfg.gmin):a9;
+          diag=`<br><small style="color:var(--gray-400);font-size:10px">Precio ${fCOP(cfg.pmin)}-${fCOP(cfg.pmax)}: ${all.length}→${a2.length} | Area ${cfg.amin}-${cfg.amax}m2: →${a4.length} | Hab ${cfg.rmin}-${cfg.rmax}: →${a6.length} | Estrato [${cfg.estratos}]: →${a7.length} | Baños ${cfg.bmin}-${cfg.bmax}: →${a9.length} | Parq ≥${cfg.gmin}: →${a10.length}</small>`;
+        }
+      }catch{}
+    }
+    el.innerHTML=`<div class="empty-state"><p>Sin resultados para estos filtros</p>${diag}</div>`;return}
+  el.innerHTML=f.map(l=>{
+    const pp=l.area_m2?fCOP(Math.round(l.price/l.area_m2)):"?";
+    // NUEVO badge: generation-based (first discovery only)
+    const isNuevo=l.status==="new"&&l.first_seen_gen===searchGen;
+    // Highlight: click-based (unread until clicked), independent of NUEVO
+    const unread=!l.read&&l.status==="new";
+    let badgeHtml="";
+    if(l.status==="contacted")badgeHtml=`<span class="card-badge card-badge-contacted">CONTACTADO</span>`;
+    else if(l.status==="discarded")badgeHtml=`<span class="card-badge card-badge-discarded">DESCARTADO</span>`;
+    else if(isNuevo)badgeHtml=`<span class="card-badge card-badge-new">NUEVO</span>`;
+    const eH=l.estrato?`<span class="card-estrato">E${l.estrato}</span>`:"";
+    const sc=l.status!=="new"?`status-${l.status}`:"";
+    const unreadCls=unread?"unread":"";
+    const favCls=l.favorite?"active":"";
+    return`<div class="card ${l.id===selectedId?"selected":""} ${sc} ${unreadCls}" onclick="select('${l.id}')">
+      <button class="card-fav ${favCls}" onclick="event.stopPropagation();toggleFav('${l.id}')" title="Favorito">${l.favorite?"&#9733;":"&#9734;"}</button>
+      <div class="card-row1"><span class="card-source">${l.source_icon} ${l.source}</span>${badgeHtml}</div>
+      <div class="card-price">${l.price_formatted||fCOP(l.price)}${eH}</div>
+      <div class="card-title">${l.title}</div>
+      <div class="card-meta"><span>${l.area_m2}m2</span><span>${l.rooms} hab</span><span>${l.bathrooms} ban</span>${l.garages?`<span>${l.garages} parq</span>`:""}<span>${l.neighborhood}</span>${proximityOn&&l._dist!==null&&l._dist!==undefined?`<span style="color:var(--blue);font-weight:700">📍${l._dist.toFixed(1)}km</span>`:""}</div>
+      <div class="card-ppm2">${pp}/m2</div>
+    </div>`}).join("");
+}
+function select(id){selectedId=id;const l=listings.find(x=>x.id===id);if(l&&!l.read){l.read=true;save()}render();renderDetail(l)}
+function renderDetail(l){
+  if(!l)return;const el=document.getElementById("detail");
+  const pp=l.area_m2?fCOP(Math.round(l.price/l.area_m2)):"?";
+  const cA=l.status==="contacted"?"active":"",dA=l.status==="discarded"?"active":"";
+  const cL=l.status==="contacted"?"✓ Contactado":"Contactado",dL=l.status==="discarded"?"✗ Descartado":"Descartar";
+  const imgs=l.images?.length?`<div class="detail-images">${l.images.map(i=>`<img src="${i}" alt="" onerror="this.style.display='none'">`).join("")}</div>`:"";
+  const tm=l.scraped_at?new Date(l.scraped_at).toLocaleDateString("es-CO",{year:"numeric",month:"short",day:"numeric"}):"";
+  const eTag=l.estrato?`<span class="tag tag-purple">Estrato ${l.estrato}</span>`:"";
+  const dist=listingDist(l);
+  const distTag=dist!==null?`<span class="tag" style="background:var(--blue-light);color:var(--blue);border-color:var(--blue)">📍 ${dist.toFixed(1)} km</span>`:"";
+  const fmtD=d=>d?new Date(d).toLocaleDateString("es-CO",{day:"numeric",month:"short"}):"";
+  const firstSeen=fmtD(l.first_seen);
+  const lastSeen=fmtD(l.last_seen);
+  const seenInfo=firstSeen?(firstSeen===lastSeen?`Visto: ${firstSeen}`:`Visto: ${firstSeen} → ${lastSeen}`):"";
+  el.innerHTML=`
+    <div class="detail-head">
+      <div class="detail-source">${l.source_icon} ${l.source} ${tm?`· ${tm}`:""} ${seenInfo?`· ${seenInfo}`:""}</div>
+      <div class="detail-title">${l.title}</div>
+      <div class="detail-price">${l.price_formatted||fCOP(l.price)}</div>
+      <div class="detail-tags">
+        <span class="tag">${l.area_m2} m2</span><span class="tag">${l.rooms} hab</span>
+        <span class="tag">${l.bathrooms} baños</span>${l.garages?`<span class="tag">${l.garages} parqueadero${l.garages>1?"s":""}</span>`:""}<span class="tag">${l.neighborhood}</span>
+        ${eTag}<span class="tag">${pp}/m2</span>${distTag}
+      </div>
+      ${l.phones&&l.phones.length?`<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span style="font-size:11px;font-weight:600;color:var(--gray-500)">Contacto:</span>${l.phones.map(p=>`<a href="tel:${p.replace(/\s/g,"")}" style="font-size:13px;font-weight:700;color:var(--green-dark);text-decoration:none;padding:4px 10px;background:var(--green-light);border-radius:6px;border:1px solid var(--green)">${p}</a><a href="https://wa.me/${p.replace(/[\s\-\+]/g,"").replace(/^57/,"57").replace(/^3/,"573")}" target="_blank" rel="noopener" style="font-size:11px;text-decoration:none;padding:4px 8px;background:#dcfce7;border-radius:6px;color:#16a34a;border:1px solid #86efac" title="WhatsApp">WA</a>`).join("")}</div>`:""}</div>
+    <div class="detail-actions">
+      <button class="btn btn-ghost" onclick="toggleFav('${l.id}')" style="${l.favorite?'background:#fffbeb;color:#f59e0b;border:2px solid #f59e0b':'border:1px solid var(--gray-200);color:#f59e0b'}">${l.favorite?"&#9733; Favorito":"&#9734; Favorito"}</button>
+      <button class="btn btn-add ${cA}" onclick="setS('${l.id}','contacted')" style="${cA?'background:var(--green-light);color:var(--green-dark);border:2px solid var(--green)':''}">${cL}</button>
+      <button class="btn btn-ghost ${dA}" onclick="setS('${l.id}','discarded')" style="${dA?'background:var(--red-light);color:var(--red);border:2px solid var(--red)':'border:1px solid var(--gray-200);color:var(--red)'}">${dL}</button>
+      <a href="${l.url}" target="_blank" rel="noopener" class="btn btn-ghost" style="text-decoration:none">Ver publicacion ↗</a>
+      ${l.lat&&l.lon?`<a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${l.lat},${l.lon}" target="_blank" rel="noopener" class="btn btn-ghost" style="text-decoration:none">🛣️ Street View</a>`:""}
+    </div>
+    ${l.favorite||l.status==="contacted"||l.status==="discarded"?`<div style="padding:10px 24px;background:var(--white);border-bottom:1px solid var(--gray-100)">
+      <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--gray-400);display:block;margin-bottom:4px">Notas</label>
+      <textarea id="detail-notes" rows="3" placeholder="Agrega notas sobre este inmueble..." style="width:100%;padding:8px 10px;border:1px solid var(--gray-200);border-radius:8px;font-size:12px;color:var(--gray-800);font-family:inherit;resize:vertical;outline:none;background:var(--gray-50)" oninput="saveNote('${l.id}',this.value)" onfocus="this.style.borderColor='var(--blue)';this.style.boxShadow='0 0 0 3px var(--blue-light)'" onblur="this.style.borderColor='var(--gray-200)';this.style.boxShadow='none'">${l.notes||""}</textarea>
+    </div>`:""}
+    ${imgs}
+    <div class="detail-iframe"><iframe src="${l.url}" sandbox="allow-scripts allow-same-origin" loading="lazy"></iframe></div>`;
+}
+function setS(id,s){const l=listings.find(x=>x.id===id);if(!l)return;if(l.status===s){l.status="new";l.status_changed_at=""}else{l.status=s;l.status_changed_at=new Date().toISOString()}save();render()}
+function toggleFav(id){const l=listings.find(x=>x.id===id);if(!l)return;l.favorite=!l.favorite;save();render();if(selectedId===id)renderDetail(l)}
+function saveNote(id,text){const l=listings.find(x=>x.id===id);if(!l)return;l.notes=text;save()}
+
+function toggleDisplayFilters(){displayFiltersOn=!displayFiltersOn;document.getElementById("filter-toggle").classList.toggle("active",displayFiltersOn);render()}
+
+function toggleProximity(){
+  if(!proximityOn){
+    // Activate — try geolocation first
+    if(userLat&&userLon){
+      proximityOn=true;showProximityUI(true);sort="nearest";document.getElementById("sort").value="nearest";render();return;
+    }
+    if(!navigator.geolocation){toast("Geolocation no disponible — usa coordenadas manuales",true);showProximityUI(true);document.getElementById("proximity-coords").style.display="block";return}
+    toast("Obteniendo ubicacion...");
+    navigator.geolocation.getCurrentPosition(
+      pos=>{userLat=pos.coords.latitude;userLon=pos.coords.longitude;proximityOn=true;showProximityUI(true);sort="nearest";document.getElementById("sort").value="nearest";render();toast(`Ubicacion: ${userLat.toFixed(4)}, ${userLon.toFixed(4)}`)},
+      err=>{console.log("[Proximity] Geolocation denied:",err.message);toast("Ubicacion denegada — ingresa coordenadas manualmente",true);showProximityUI(true);document.getElementById("proximity-coords").style.display="block"},
+      {enableHighAccuracy:false,timeout:10000,maximumAge:300000}
+    );
+  }else{
+    proximityOn=false;showProximityUI(false);render();
+  }
+}
+function showProximityUI(on){
+  document.getElementById("proximity-toggle").classList.toggle("active",on);
+  document.getElementById("proximity-controls").style.display=on?"flex":"none";
+  if(on&&userLat){
+    const withCoords=listings.filter(l=>l.lat&&l.lon).length;
+    const inRange=listings.filter(l=>{const d=listingDist(l);return d!==null&&d<=proximityKm}).length;
+    document.getElementById("proximity-toggle").textContent=`📍 Cerca (${inRange}/${withCoords})`;
+  }else{
+    document.getElementById("proximity-toggle").textContent="📍 Cerca de mí";
+  }
+}
+function updateProximityKm(v){proximityKm=parseInt(v)||5;document.getElementById("proximity-label").textContent=proximityKm+" km";if(proximityOn){showProximityUI(true);render()}}
+function toggleManualCoords(){const el=document.getElementById("proximity-coords");el.style.display=el.style.display==="none"?"block":"none";if(el.style.display==="block"&&userLat)el.value=`${userLat.toFixed(6)}, ${userLon.toFixed(6)}`}
+function setManualCoords(v){
+  const m=v.match(/(-?\d+\.?\d*)\s*[,\s]\s*(-?\d+\.?\d*)/);
+  if(!m){toast("Formato: lat, lon (ej: 4.6486, -74.0579)",true);return}
+  userLat=parseFloat(m[1]);userLon=parseFloat(m[2]);
+  proximityOn=true;showProximityUI(true);sort="nearest";document.getElementById("sort").value="nearest";render();
+  toast(`Ubicacion manual: ${userLat.toFixed(4)}, ${userLon.toFixed(4)}`);
+}
+function updateFilterCount(){
+  // Show how many listings match the search criteria on the filter button
+  try{
+    const cfg=readCfg();if(!cfg)return;
+    let r=[...listings];
+    if(cfg.pmin>0) r=r.filter(l=>!l.price||l.price>=cfg.pmin);
+    if(cfg.pmax>0) r=r.filter(l=>!l.price||l.price<=cfg.pmax);
+    if(cfg.amin>0) r=r.filter(l=>!l.area_m2||l.area_m2>=cfg.amin);
+    if(cfg.amax>0) r=r.filter(l=>!l.area_m2||l.area_m2<=cfg.amax);
+    if(cfg.rmin>0) r=r.filter(l=>!l.rooms||l.rooms>=cfg.rmin);
+    if(cfg.rmax>0) r=r.filter(l=>!l.rooms||l.rooms<=cfg.rmax);
+    if(cfg.estratos&&cfg.estratos.length>0&&cfg.estratos.length<6){r=r.filter(l=>!l.estrato||cfg.estratos.includes(l.estrato))}
+    document.getElementById("filter-toggle").textContent=`⚡ Filtrar (${r.length}/${listings.length})`;
+  }catch{}
+}
+
+// ═══ EVENTS ═══
+document.querySelectorAll(".pill[data-f]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".pill[data-f]").forEach(x=>x.classList.remove("active"));b.classList.add("active");filter=b.dataset.f;render()}));
+document.getElementById("q").addEventListener("input",e=>{query=e.target.value;render()});
+document.getElementById("sort").addEventListener("change",e=>{sort=e.target.value;render()});
+document.addEventListener("keydown",e=>{
+  if(["INPUT","SELECT","TEXTAREA"].includes(e.target.tagName))return;
+  if(e.key==="Escape"){closeSearch();closeAdd();return}
+  const f=getFiltered(),ci=f.findIndex(l=>l.id===selectedId);
+  if((e.key==="ArrowDown"||e.key==="j")&&f.length){e.preventDefault();select(f[Math.min(ci+1,f.length-1)].id)}
+  if((e.key==="ArrowUp"||e.key==="k")&&f.length){e.preventDefault();select(f[Math.max(ci-1,0)].id)}
+  if(e.key==="f"&&selectedId)toggleFav(selectedId);
+  if(e.key==="c"&&selectedId)setS(selectedId,"contacted");
+  if(e.key==="d"&&selectedId)setS(selectedId,"discarded");
+  if(e.key==="r"&&selectedId)setS(selectedId,"new");
+  if(e.key==="o"&&selectedId){const l=listings.find(x=>x.id===selectedId);if(l?.url)window.open(l.url,"_blank")}
+});
+
+// ═══ METROCUADRADO QUICK TEST ═══
+async function testMC(){
+  const btn=document.getElementById("btn-mctest");
+  btn.textContent="⏳...";btn.disabled=true;
+  let r="=== METROCUADRADO QUICK TEST ===\n\n";
+  const T=6000; // 6s timeout — only try FIRST proxy that works
+
+  // Fast single-proxy fetch
+  async function qFetch(url){
+    for(const pf of PROXIES){
+      try{const resp=await fetch(pf(url),{signal:AbortSignal.timeout(T)});if(resp.ok)return await resp.text()}catch{}
+    }
+    return null;
+  }
+
+  // 1) Test API with multiple param combos
+  r+="── 1. REST API TESTS ──\n";
+  const apiTests=[
+    {label:"city=bogota d.c.",params:"realEstateTypeList=apartamento&realEstateBusinessList=venta&city=bogota+d.c.&from=0&size=3"},
+    {label:"city=bogota",params:"realEstateTypeList=apartamento&realEstateBusinessList=venta&city=bogota&from=0&size=3"},
+    {label:"city=11001",params:"realEstateTypeList=apartamento&realEstateBusinessList=venta&city=11001&from=0&size=3"},
+    {label:"no city, location path",params:"realEstateTypeList=apartamento&realEstateBusinessList=venta&locations.location_point=bogota&from=0&size=3"},
+  ];
+  for(const t of apiTests){
+    const url=`https://www.metrocuadrado.com/rest-search/search?${t.params}&x-api-key=${MC_KEY}`;
+    r+=`\n[${t.label}]\nURL: ${url}\n`;
+    try{
+      const txt=await qFetch(url);
+      if(txt){
+        r+=`Response (${txt.length} chars): ${txt.slice(0,600)}\n`;
+        try{const j=JSON.parse(txt);r+=`JSON keys: ${Object.keys(j).join(", ")}\n`;
+          if(j.results)r+=`results count: ${j.results.length}\n`;
+          if(j.data)r+=`data count: ${Array.isArray(j.data)?j.data.length:"not array"}\n`;
+          if(j.hits)r+=`hits: ${JSON.stringify(j.hits).slice(0,300)}\n`;
+        }catch{r+=`(not JSON)\n`}
+      }else r+=`NULL (all proxies failed)\n`;
+    }catch(e){r+=`Error: ${e.message}\n`}
+  }
+
+  // 2) Fetch search page and analyze
+  r+=`\n\n── 2. SEARCH PAGE HTML ──\n`;
+  const searchUrl="https://www.metrocuadrado.com/apartamentos/venta/bogota/";
+  r+=`URL: ${searchUrl}\n`;
+  try{
+    const html=await qFetch(searchUrl);
+    if(html){
+      r+=`HTML length: ${html.length}\n`;
+
+      // /inmueble/ paths
+      const inmPaths=[...html.matchAll(/\/inmueble\/([^"'\s\\<>]{3,150})/g)];
+      r+=`\n/inmueble/ paths: ${inmPaths.length}\n`;
+      const pathSet=new Set();
+      for(const m of inmPaths)pathSet.add(m[1]);
+      for(const p of [...pathSet].slice(0,10)) r+=`  /inmueble/${p}\n`;
+
+      // Property codes
+      const codes=[...new Set([...html.matchAll(/\b(\d{1,6}-[A-Za-z]\d{3,10})\b/g)].map(m=>m[1]))];
+      r+=`\nProperty codes: ${codes.length}\n`;
+      for(const c of codes.slice(0,15)) r+=`  ${c}\n`;
+
+      // __next_f chunks
+      const chunks=[...html.matchAll(/self\.__next_f\.push\(\s*\[\s*(\d+)\s*,\s*/g)];
+      r+=`\n__next_f.push() calls: ${chunks.length}\n`;
+
+      // Decode ALL flight data and look for anything listing-like
+      r+=`\n── Flight data analysis ──\n`;
+      const allChunks=[...html.matchAll(/self\.__next_f\.push\(\s*\[\s*\d+\s*,\s*"([\s\S]*?)"\s*\]\s*\)/g)];
+      r+=`String chunks: ${allChunks.length}\n`;
+      for(let i=0;i<allChunks.length;i++){
+        const d=allChunks[i][1].replace(/\\n/g,'\n').replace(/\\"/g,'"').replace(/\\\\/g,'\\').replace(/\\t/g,'\t');
+        if(d.length<30)continue;
+        // Check if this chunk has anything listing-related
+        const hasPrice=d.includes("price")||d.includes("Price")||d.includes("precio");
+        const hasArea=d.includes("area")||d.includes("Area")||d.includes("m2");
+        const hasInmueble=d.includes("inmueble");
+        const hasCode=/\d{1,6}-[A-Z]\d{3,10}/.test(d);
+        if(hasPrice||hasArea||hasInmueble||hasCode){
+          r+=`\nChunk[${i}] (${d.length} chars) [price:${hasPrice} area:${hasArea} inmueble:${hasInmueble} code:${hasCode}]:\n`;
+          r+=d.slice(0,1200)+"\n";
+        }
+      }
+
+      // Non-string push calls (RSC uses different formats)
+      const nonStringChunks=[...html.matchAll(/self\.__next_f\.push\(\s*(\[[^\]]{10,})\s*\)/g)];
+      r+=`\nNon-string push calls: ${nonStringChunks.length}\n`;
+      for(let i=0;i<Math.min(nonStringChunks.length,3);i++){
+        r+=`NSChunk[${i}]: ${nonStringChunks[i][1].slice(0,500)}\n`;
+      }
+
+      // Raw HTML snippets around key patterns
+      for(const kw of ["product_id","salePrice","inmueble","detailLink","propertyUrl"]){
+        const idx=html.indexOf(kw);
+        if(idx>-1) r+=`\n"${kw}" found at pos ${idx}: ...${html.slice(Math.max(0,idx-50),idx+200)}...\n`;
+      }
+
+    }else r+=`NULL (all proxies failed)\n`;
+  }catch(e){r+=`Error: ${e.message}\n`}
+
+  // 3) Test a known good detail URL from Google
+  r+=`\n\n── 3. DETAIL PAGE TEST ──\n`;
+  const testDetailUrl="https://www.metrocuadrado.com/inmueble/venta-apartamento-bogota-fontibon-centro-3-habitaciones-1-banos/3496-M6425433";
+  r+=`Known good URL: ${testDetailUrl}\n`;
+  try{
+    const dHtml=await qFetch(testDetailUrl);
+    if(dHtml){
+      r+=`HTML length: ${dHtml.length}\n`;
+      const title=dHtml.match(/<title[^>]*>([^<]+)/)?.[1]||"(none)";
+      r+=`<title>: ${title}\n`;
+      const ogT=dHtml.match(/<meta[^>]*property="og:title"[^>]*content="([^"]*)"/)?.[1]||"(none)";
+      const ogD=dHtml.match(/<meta[^>]*property="og:description"[^>]*content="([^"]*)"/)?.[1]||"(none)";
+      r+=`og:title: ${ogT}\nog:description: ${ogD}\n`;
+      const ldMs=[...dHtml.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
+      r+=`ld+json blocks: ${ldMs.length}\n`;
+      for(const [,js] of ldMs) r+=`  ${js.slice(0,500)}\n`;
+      // Check for __NEXT_DATA__
+      const nd=dHtml.match(/<script[^>]*id="__NEXT_DATA__"[^>]*>/);
+      r+=`__NEXT_DATA__: ${nd?"YES":"NO"}\n`;
+      // Check flight data
+      const fc=[...dHtml.matchAll(/self\.__next_f\.push/g)];
+      r+=`Flight chunks: ${fc.length}\n`;
+      // Sample flight data with price/area
+      const dChunks=[...dHtml.matchAll(/self\.__next_f\.push\(\s*\[\s*\d+\s*,\s*"([\s\S]*?)"\s*\]\s*\)/g)];
+      for(let i=0;i<dChunks.length;i++){
+        const d=dChunks[i][1].replace(/\\n/g,'\n').replace(/\\"/g,'"').replace(/\\\\/g,'\\');
+        if(d.includes("price")||d.includes("Price")||d.includes("area")||d.includes("Area")||d.includes("salePrice")){
+          r+=`\nDetail chunk[${i}] (${d.length} chars):\n${d.slice(0,1000)}\n`;
+        }
+      }
+    }else r+=`NULL (failed)\n`;
+  }catch(e){r+=`Error: ${e.message}\n`}
+
+  const w=window.open("","_blank","width=1000,height=700");
+  w.document.write(`<html><head><title>MC Test</title></head><body><pre style="font-size:11px;white-space:pre-wrap;font-family:monospace;padding:20px">${r.replace(/</g,'&lt;')}</pre><br><button onclick="navigator.clipboard.writeText(document.querySelector('pre').textContent);this.textContent='Copied!'">Copy to clipboard</button></body></html>`);
+  btn.textContent="🏢 Test MC";btn.disabled=false;
+  toast("MC test report opened");
+}
+
+// ═══ DEBUG ═══
+async function runDebug(){
+  const btn=document.getElementById("btn-debug");
+  btn.textContent="⏳ Fetching...";btn.disabled=true;
+  const c=readCfg();
+  const urls={
+    "Finca Raiz":`https://www.fincaraiz.com.co/${c.type}s/${c.offer}/${c.city}?order=3&pagina=1&precio-desde=${c.pmin}&precio-hasta=${c.pmax}&area-desde=${c.amin}&area-hasta=${c.amax}&habitaciones-desde=${c.rmin}&habitaciones-hasta=${c.rmax}`,
+    "Metrocuadrado":`https://www.metrocuadrado.com/${c.type}s/${c.offer}/${c.city}/`,
+    "Ciencuadras":`https://www.ciencuadras.com/${c.offer}/${c.city}/${c.type}`
+  };
+  let report="=== FLIP FINDER DEBUG REPORT ===\n\n";
+  for(const [name,url] of Object.entries(urls)){
+    report+=`\n${"=".repeat(50)}\n${name}: ${url}\n${"=".repeat(50)}\n`;
+    try{
+      const html=await cFetch(url);
+      if(!html){report+=`FAILED: no HTML returned\n`;continue}
+      report+=`HTML length: ${html.length} chars\n\n`;
+
+      // Check __NEXT_DATA__
+      const ndM=html.match(/<script[^>]*id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+      if(ndM){
+        try{
+          const nd=JSON.parse(ndM[1]);
+          report+=`--- __NEXT_DATA__ found ---\n`;
+          report+=`Top keys: ${Object.keys(nd).join(', ')}\n`;
+          if(nd.props?.pageProps){
+            report+=`pageProps keys: ${Object.keys(nd.props.pageProps).join(', ')}\n`;
+            // Find first listing-like array and dump first item
+            const arrs=walkForArrays(nd);
+            report+=`Listing arrays found: ${arrs.length}\n`;
+            for(let i=0;i<Math.min(arrs.length,2);i++){
+              report+=`\nArray[${i}] length: ${arrs[i].length}\n`;
+              report+=`First item keys: ${Object.keys(arrs[i][0]).join(', ')}\n`;
+              // Show area/rooms/price fields specifically for first 3 items
+              report+=`\n--- AREA/ROOMS/PRICE FIELDS (first 3 items) ---\n`;
+              for(let j=0;j<Math.min(arrs[i].length,3);j++){
+                const it=arrs[i][j];
+                report+=`Item[${j}]: title="${it.title||it.name||'?'}" | m2=${JSON.stringify(it.m2)} | m2Built=${JSON.stringify(it.m2Built)} | m2apto=${JSON.stringify(it.m2apto)} | area=${JSON.stringify(it.area)} | builtArea=${JSON.stringify(it.builtArea)} | privateArea=${JSON.stringify(it.privateArea)} | bedrooms=${JSON.stringify(it.bedrooms)} | rooms=${JSON.stringify(it.rooms)} | bathrooms=${JSON.stringify(it.bathrooms)} | stratum=${JSON.stringify(it.stratum)} | price=${JSON.stringify(it.price)}\n`;
+              }
+              report+=`\nFirst item (truncated):\n${JSON.stringify(arrs[i][0],null,2).slice(0,3000)}\n`;
+            }
+          }
+        }catch(e){report+=`Parse error: ${e.message}\n`}
+      }else{report+=`No __NEXT_DATA__ found\n`}
+
+      // Check flight data
+      const fc=[...html.matchAll(/self\.__next_f\.push/g)];
+      report+=`\nFlight data chunks: ${fc.length}\n`;
+      if(fc.length>0){
+        const chunks=[...html.matchAll(/self\.__next_f\.push\(\[[\d,]+,"([^"]+)"\]\)/g)];
+        report+=`Parseable flight chunks: ${chunks.length}\n`;
+        for(let i=0;i<Math.min(chunks.length,3);i++){
+          const decoded=chunks[i][1].replace(/\\n/g,'\n').replace(/\\"/g,'"').replace(/\\\\/g,'\\');
+          if(decoded.length>100)report+=`Chunk[${i}] (${decoded.length} chars): ${decoded.slice(0,500)}...\n\n`;
+        }
+      }
+
+      // Check ld+json
+      const ldMs=[...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
+      report+=`\nld+json blocks: ${ldMs.length}\n`;
+      for(const [,c2] of ldMs){
+        try{
+          const ld=JSON.parse(c2);
+          report+=`ld+json @type: ${ld["@type"]||"none"}\n`;
+          if(ld.itemListElement)report+=`itemListElement count: ${ld.itemListElement.length}\nFirst: ${JSON.stringify(ld.itemListElement[0],null,2).slice(0,1500)}\n`;
+          else report+=`Content (truncated): ${JSON.stringify(ld,null,2).slice(0,1000)}\n`;
+        }catch{}
+      }
+
+      // Test parsers on actual data
+      report+=`\n--- PARSER TEST ---\n`;
+      if(name==="Finca Raiz"){
+        const parsed=parseFincaRaiz(html);
+        report+=`parseFincaRaiz returned: ${parsed.length} listings\n`;
+        for(let i=0;i<Math.min(parsed.length,3);i++){
+          const p=parsed[i];
+          report+=`  [${i}] price=${p.price} area_m2=${p.area_m2} rooms=${p.rooms} baths=${p.bathrooms} estrato=${p.estrato} hood="${p.neighborhood}" title="${p.title.slice(0,60)}"\n`;
+        }
+      }
+      if(name==="Ciencuadras"){
+        const parsed=parseCiencuadras(html);
+        report+=`parseCiencuadras returned: ${parsed.length} listings\n`;
+        for(let i=0;i<Math.min(parsed.length,3);i++){
+          const p=parsed[i];
+          report+=`  [${i}] price=${p.price} area_m2=${p.area_m2} rooms=${p.rooms} baths=${p.bathrooms} estrato=${p.estrato} hood="${p.neighborhood}" title="${p.title.slice(0,60)}"\n`;
+        }
+      }
+
+      // Check other script tags with property data
+      const otherScripts=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)];
+      let propertyScripts=0;
+      for(const [,sc] of otherScripts){
+        if(sc.length<200||sc.length>500000)continue;
+        if(sc.includes("__NEXT_DATA__"))continue;
+        if(sc.includes("precio")||sc.includes("price")||sc.includes("area")||sc.includes("habitacion")){
+          propertyScripts++;
+          if(propertyScripts<=2)report+=`\nProperty-related script (${sc.length} chars):\n${sc.slice(0,2000)}...\n`;
+        }
+      }
+      report+=`\nTotal property-related scripts: ${propertyScripts}\n`;
+
+      // ── METROCUADRADO SPECIFIC DIAGNOSTICS ──
+      if(name==="Metrocuadrado"){
+        report+=`\n--- MC URL EXTRACTION ---\n`;
+        // All /inmueble/ paths found
+        const inmPaths=[...html.matchAll(/\/inmueble\/([^"'\s\\]{5,120})/g)];
+        report+=`/inmueble/ paths found: ${inmPaths.length}\n`;
+        for(let i=0;i<Math.min(inmPaths.length,10);i++) report+=`  ${inmPaths[i][0]}\n`;
+        // Property code patterns
+        const codePats=[...html.matchAll(/\b(\d{1,6}-[A-Za-z]\d{3,10})\b/g)];
+        report+=`\nProperty codes (X-YZ pattern): ${codePats.length}\n`;
+        const codeSet=new Set(codePats.map(m=>m[1]));
+        for(const c2 of [...codeSet].slice(0,15)) report+=`  ${c2}\n`;
+        // Decoded flight data sample
+        report+=`\n--- MC DECODED FLIGHT DATA SAMPLES ---\n`;
+        const mcChunks=[...html.matchAll(/self\.__next_f\.push\(\s*\[\s*\d+\s*,\s*"([\s\S]*?)"\s*\]\s*\)/g)];
+        report+=`Total __next_f chunks: ${mcChunks.length}\n`;
+        for(let i=0;i<Math.min(mcChunks.length,5);i++){
+          try{
+            const d=mcChunks[i][1].replace(/\\n/g,'\n').replace(/\\"/g,'"').replace(/\\\\/g,'\\').replace(/\\t/g,'\t');
+            if(d.length>50) report+=`\nChunk[${i}] (${d.length} chars):\n${d.slice(0,800)}\n`;
+          }catch{}
+        }
+        // Also dump raw HTML near "inmueble" mentions
+        const inmIdx=html.indexOf("inmueble");
+        if(inmIdx>-1) report+=`\n--- RAW HTML around first "inmueble" (pos ${inmIdx}) ---\n${html.slice(Math.max(0,inmIdx-100),inmIdx+300)}\n`;
+        // Try API directly and show response
+        report+=`\n--- MC API TEST ---\n`;
+        const apiUrl2=`https://www.metrocuadrado.com/rest-search/search?realEstateTypeList=${c.type}&realEstateBusinessList=${c.offer}&city=${encodeURIComponent(c.city==="bogota"?"bogota d.c.":c.city)}&from=0&size=3&x-api-key=${MC_KEY}`;
+        report+=`API URL: ${apiUrl2}\n`;
+        try{
+          const apiText=await cFetch(apiUrl2,8000);
+          if(apiText){
+            report+=`API response (${apiText.length} chars):\n${apiText.slice(0,2000)}\n`;
+          }else{report+=`API returned null (all proxies failed)\n`}
+        }catch(e){report+=`API error: ${e.message}\n`}
+      }
+
+    }catch(e){report+=`Error: ${e.message}\n`}
+  }
+
+  // Open in new window for easy copy
+  const w=window.open("","_blank","width=900,height=700");
+  w.document.write(`<html><head><title>Flip Finder Debug</title></head><body><pre style="font-size:12px;white-space:pre-wrap;font-family:monospace;padding:20px">${report.replace(/</g,'&lt;')}</pre><br><button onclick="navigator.clipboard.writeText(document.querySelector('pre').textContent);this.textContent='Copied!'">Copy to clipboard</button></body></html>`);
+  btn.textContent="🔍 Debug";btn.disabled=false;
+  toast("Debug report opened in new tab");
+}
+
+// ═══ INIT ═══
+loadCfg(); // Populate DOM form fields from saved config so getFiltered() reads correct values
+if(load())render();
+
+// ═══ DAILY SEARCH REMINDER ═══
+function checkReminder(){
+  const banner=document.getElementById("reminder-banner");
+  const lastEl=document.getElementById("reminder-last");
+  if(!banner||!lastEl)return;
+  const ls=localStorage.getItem(LSK);
+  const dismissed=sessionStorage.getItem("ff_reminder_dismissed");
+  if(dismissed){banner.classList.remove("show");return}
+  if(!ls){
+    // Never searched
+    lastEl.textContent="Nunca has buscado.";
+    banner.classList.add("show");return;
+  }
+  const last=new Date(ls);
+  const now=new Date();
+  const diffH=(now-last)/(1000*60*60);
+  if(diffH>=12){
+    // More than 12 hours since last search
+    const dStr=last.toLocaleDateString("es-CO",{day:"numeric",month:"short"});
+    const tStr=last.toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"});
+    lastEl.textContent=`Última: ${dStr} ${tStr}`;
+    banner.classList.add("show");
+  }else{
+    banner.classList.remove("show");
+  }
+}
+function dismissReminder(){
+  sessionStorage.setItem("ff_reminder_dismissed","1");
+  document.getElementById("reminder-banner").classList.remove("show");
+}
+checkReminder();
+</script>
+</body>
+</html>
