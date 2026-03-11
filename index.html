@@ -561,7 +561,7 @@ async function runSearch(){
             for(const arr of arrays){
               for(const it of arr){
                 if(!it||typeof it!=="object")continue;
-                const items=parseFincaRaiz(`<script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"fetchResult":${JSON.stringify([it])}}}}</script>`);
+                const items=parseFincaRaiz(`<script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"fetchResult":${JSON.stringify([it])}}}}<\/script>`);
                 found.push(...items);frTotal+=items.length;
               }
             }
